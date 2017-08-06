@@ -1,0 +1,48 @@
+#!/bin/bash -xv
+
+rm ./like_fourier
+
+gcc -Wno-missing-braces -Wno-missing-field-initializers -I/usr/local/include -L/usr/local/lib  -o ./like_fourier_mg_musigma like_fourier_mg_musigma.c -lfftw3 -lgsl -lgslcblas -lm 
+
+./like
+
+# gcc -Wno-missing-braces -Wno-missing-field-initializers -I/home/teifler/include -L/home/teifler/lib -o ./like  like_fourier.c -lfftw3 -lgsl -lgslcblas -lm 
+
+# gcc -Wno-missing-braces -Wno-missing-field-initializers -I/usr/local/include -L/usr/local/lib -shared -o like.so -fPIC like_fourier.c -lfftw3 -lgsl -lgslcblas -lm 
+
+# setenv LD_LIBRARY_PATH /home/teifler/lib
+# gcc -Wno-missing-braces -Wno-missing-field-initializers -I/home/teifler/include -L/home/teifler/lib -o ./like_fourier_mg_musigma like_fourier_mg_musigma.c -lfftw3 -lgsl -lgslcblas -lm 
+
+
+# gcc -Wno-missing-braces -Wno-missing-field-initializers -I/home/teifler/include -L/home/teifler/lib -shared -o like_fourier_mg_musigma.so -fPIC like_fourier_mg_musigma.c -lfftw3 -lgsl -lgslcblas -lm 
+
+gcc -std=c99 -Wno-missing-braces -Wno-missing-field-initializers -I/home/teifler/include -L/home/teifler/lib -shared -o like_grs.so -fPIC like_grs.c -lfftw3 -lgsl -lgslcblas -lm 
+
+gcc -std=c99 -Wno-missing-braces -Wno-missing-field-initializers -I/home/teifler/include -L/home/teifler/lib -shared -o like_fourier.so -fPIC like_fourier.c -lfftw3 -lgsl -lgslcblas -lm -O0 -g -O3 -ffast-math -funroll-loops -std=gnu99 -L../../class -lclass
+
+gcc -std=c99 -Wno-missing-braces -Wno-missing-field-initializers -I/home/teifler/include -L/home/teifler/lib -o like_fourier like_fourier.c -lfftw3 -lgsl -lgslcblas -lm -O0 -g -O3 -ffast-math -funroll-loops -std=gnu99 -L../../class -lclass
+
+#aurora
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W_all0 ./runWFIRST_cosmolike_All_0.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W_all005 ./runWFIRST_cosmolike_All_005.py > /aurora_nobackup/sunglass/teifler/myoutput2.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W_all01 ./runWFIRST_cosmolike_All_01.py > /aurora_nobackup/sunglass/teifler/myoutput3.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W_all02 ./runWFIRST_cosmolike_All_02.py > /aurora_nobackup/sunglass/teifler/myoutput4.log
+
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W_nonifc0 ./runWFIRST_cosmolike_nonifc_0.py > /aurora_nobackup/sunglass/teifler/myoutput5.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W_nonifc005 ./runWFIRST_cosmolike_nonifc_005.py > /aurora_nobackup/sunglass/teifler/myoutput6.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W_nonifc01 ./runWFIRST_cosmolike_nonifc_01.py > /aurora_nobackup/sunglass/teifler/myoutput7.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W_nonifc02 ./runWFIRST_cosmolike_nonifc_02.py > /aurora_nobackup/sunglass/teifler/myoutput8.log
+
+
+
+
+
+
