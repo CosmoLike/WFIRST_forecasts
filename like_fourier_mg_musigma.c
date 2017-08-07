@@ -21,22 +21,22 @@
 #include <gsl/gsl_deriv.h>
 
 
-#include "../../theory/basics.c"
-#include "../../theory/structs.c"
-#include "../../theory/parameters.c"
-#include "../../emu13/emu.c"
-#include "../../theory/recompute_mg_musigma.c"
-#include "../../theory/cosmo3D_mg_musigma.c"
-#include "../../theory/redshift.c"
-#include "../../theory/halo.c"
-#include "../../theory/HOD.c"
-#include "../../theory/cosmo2D_fourier_mg_musigma.c"
-#include "../../theory/IA.c"
-#include "../../theory/cluster.c"
-#include "../../theory/BAO.c"
-#include "../../theory/external_prior.c"
-#include "../../theory/init.c"
-
+#include "../cosmolike_core/theory/basics.c"
+#include "../cosmolike_core/theory/structs.c"
+#include "../cosmolike_core/theory/parameters.c"
+#include "../cosmolike_core/emu13/emu.c"
+#include "../cosmolike_core/theory/recompute.c"
+#include "../cosmolike_core/theory/cosmo3D.c"
+#include "../cosmolike_core/theory/redshift.c"
+#include "../cosmolike_core/theory/halo.c"
+#include "../cosmolike_core/theory/HOD.c"
+#include "../cosmolike_core/theory/cosmo2D.c"
+#include "../cosmolike_core/theory/IA.c"
+#include "../cosmolike_core/theory/cluster.c"
+#include "../cosmolike_core/theory/BAO.c"
+#include "../cosmolike_core/theory/external_prior.c"
+#include "../cosmolike_core/theory/init.c"
+#include "like_grs.c"
 
 double C_shear_tomo_sys(double ell,int z1,int z2);
 double C_cgl_tomo_sys(double ell_Cluster,int zl,int nN, int zs);
@@ -406,9 +406,11 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
     printf("errror: chisqr < 0\n");
   }
   if (chisqr<-1.0) exit(EXIT_FAILURE);
-  
+  if (like.GRS == 1){
+    log_L_GRS = log_like_GRS(cosmology.Omega_m, cosmology.sigma_8, cosmology.n_spec, cosmology.w0,cosmology.wa, cosmology.omb, cosmology.h0,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.);
+  }
 //printf("%le\n",chisqr);
-  return -0.5*chisqr+log_L_prior;
+  return -0.5*chisqr+log_L_prior+ log_L_GRS;
 }
 
 void compute_data_vector(char *details,double OMM, double S8, double NS, double W0,double WA, double OMB, double H0, double MGSigma, double MGmu, double B1, double B2, double B3, double B4, double SP1, double SP2, double SP3, double SP4, double SP5, double SP6, double SP7, double SP8, double SP9, double SP10, double SPS1, double CP1, double CP2, double CP3, double CP4, double CP5, double CP6, double CP7, double CP8, double CP9, double CP10, double CPS1, double M1, double M2, double M3, double M4, double M5, double M6, double M7, double M8, double M9, double M10, double A_ia, double beta_ia, double eta_ia, double eta_ia_highz, double LF_alpha, double LF_P, double LF_Q, double LF_red_alpha, double LF_red_P, double LF_red_Q, double mass_obs_norm, double mass_obs_slope, double mass_z_slope, double mass_obs_scatter, double c1, double c2, double c3, double c4)
