@@ -30,7 +30,7 @@
 #include "../cosmolike_core/theory/redshift.c"
 #include "../cosmolike_core/theory/halo.c"
 #include "../cosmolike_core/theory/HOD.c"
-#include "../cosmolike_core/theory/cosmo2D.c"
+#include "../cosmolike_core/theory/cosmo2D_fourier.c"
 #include "../cosmolike_core/theory/IA.c"
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
@@ -509,7 +509,7 @@ double log_like_wrapper(input_cosmo_params ic, input_nuisance_params in)
 /* here, do your time-consuming job */
 
   init_cosmo();
-  init_binning_fourier(20,20.0,5000.0,5000.0,10.0,7);
+  init_binning_fourier(20,20.0,5000.0,5000.0,10.0,7,10);
   init_survey("LSST");
   init_galaxies("../../zdistris/zdistribution_LSST","../../zdistris/zdistribution_const_comoving", "gaussian", "gaussian", "redmagic");
   init_clusters();

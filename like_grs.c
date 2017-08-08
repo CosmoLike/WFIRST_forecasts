@@ -29,7 +29,7 @@
 #include "../../theory/redshift.c"
 #include "../../theory/halo.c"
 #include "../../theory/HOD.c"*/
-#include "../../theory/GRS.c"
+#include "../cosmolike_core/theory/GRS.c"
 void init_GRS(int n_trade);
 
 double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, double OMB, double H0, 
