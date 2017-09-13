@@ -537,7 +537,7 @@ int main(int argc, char** argv)
   init_cosmo();
   init_binning_fourier(15,20.0,5000.0,5000.0,10.0,7,10);
   init_survey("WFIRST");
-  init_galaxies("zdistris/zdistribution_LSST","zdistris/zdistribution_LSST", "none", "none", "source");
+  init_galaxies("zdistris/redshifts_All_0.txt","zdistris/redshifts_All_0.txt", "none", "none", "source");
   init_clusters();
   init_IA("none", "GAMA");
   

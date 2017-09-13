@@ -7,7 +7,7 @@ import numpy as np
 # from mpp_blinding import seed as blinding_seed
 
 dirname = os.path.split(__file__)[0]
-lib_name = os.path.join(dirname, "like_fourier_mg_musigma.so")
+lib_name = os.path.join(dirname, "like_fourier.so")
 lib=ctypes.cdll.LoadLibrary(lib_name)
 double = ctypes.c_double
 
@@ -224,7 +224,7 @@ class InputCosmologyParams(IterableStruct):
 class InputNuisanceParams(IterableStruct):
     section_name = "nuisance_parameters"
     _fields_ = [
-        ("bias", double*4),
+        ("bias", double*10),
         ("source_z_bias", double*10),
         ("source_z_s", double),
         ("lens_z_bias", double*10),
@@ -243,7 +243,7 @@ class InputNuisanceParams(IterableStruct):
         c = cls()
         c.lens_z_s = 0.01
         c.source_z_s = 0.05
-        c.bias[:] = [1.35, 1.5, 1.65, 1.8]
+        c.bias[:] = [1.3, 1.4, 1.5, 1.6,1.7, 1.8, 1.9, 2.0,2.1, 2.2,]
         c.A_ia = 5.92
         c.beta_ia = 1.1
         c.eta_ia = -0.47
@@ -256,7 +256,7 @@ class InputNuisanceParams(IterableStruct):
         c = cls()
         c.lens_z_s = 0.0005
         c.source_z_s = 0.001
-        c.bias[:] = [0.01, 0.01, 0.01, 0.01]
+        c.bias[:] = np.repeat(0.1, 10)
         c.shear_m[:] = np.repeat(0.0001, 10)
         c.source_z_bias[:] = np.repeat(0.001, 10)
         c.lens_z_bias[:] = np.repeat(0.0005, 10)
@@ -306,20 +306,29 @@ lib.log_like_wrapper.argtypes = [InputCosmologyParams, InputNuisanceParams]
 lib.log_like_wrapper.restype = double
 log_like_wrapper = lib.log_like_wrapper
 
-def sample_cosmology_only():
-    varied_parameters = InputCosmologyParams().names()
+def sample_cosmology_only(MG = False):
+    if MG:
+        varied_parameters = InputCosmologyParams().names()
+    else:
+        varied_parameters = ['omega_m']
+        varied_parameters.append('sigma_8')
+        varied_parameters.append('n_s')
+        varied_parameters.append('w0')
+        varied_parameters.append('wa')
+        varied_parameters.append('omega_b')
+        varied_parameters.append('h0')
+
     return varied_parameters
 
-
-def sample_cosmology_shear_nuisance(tomo_N_shear):
-    varied_parameters = InputCosmologyParams().names()
+def sample_cosmology_shear_nuisance(tomo_N_shear,MG = False):
+    varied_parameters = sample_cosmology_only(MG)
     varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters += ['source_z_bias_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters.append('source_z_s')
     return varied_parameters
 
-def sample_cosmology_2pt_nuisance(tomo_N_shear,tomo_N_lens):
-    varied_parameters = InputCosmologyParams().names()
+def sample_cosmology_2pt_nuisance(tomo_N_shear,tomo_N_lens,MG = False):
+    varied_parameters = sample_cosmology_only(MG)
     varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters += ['source_z_bias_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters += ['lens_z_bias_%d'%i for i in xrange(tomo_N_lens)]
@@ -328,8 +337,8 @@ def sample_cosmology_2pt_nuisance(tomo_N_shear,tomo_N_lens):
     varied_parameters.append('lens_z_s')
     return varied_parameters
 
-def sample_cosmology_2pt_nuisance_IA_marg(tomo_N_shear,tomo_N_lens):
-    varied_parameters = InputCosmologyParams().names()
+def sample_cosmology_2pt_nuisance_IA_marg(tomo_N_shear,tomo_N_lens,MG = False):
+    varied_parameters = sample_cosmology_only(MG)
     varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters += ['source_z_bias_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters += ['lens_z_bias_%d'%i for i in xrange(tomo_N_lens)]
@@ -343,8 +352,11 @@ def sample_cosmology_2pt_nuisance_IA_marg(tomo_N_shear,tomo_N_lens):
     varied_parameters += ['lf_%d'%i for i in xrange(6)]
     return varied_parameters
 
-def sample_cosmology_2pt_cluster_nuisance(tomo_N_shear,tomo_N_lens):
-    varied_parameters = InputCosmologyParams().names()
+def sample_cosmology_2pt_cluster_nuisance(tomo_N_shear,tomo_N_lens,MG = False):
+    if MG:
+        print "sample_cosmology_2pt_cluster_nuisance: MG = True not yet supported for clusters"
+        os.exit()
+    varied_parameters = sample_cosmology_only(MG)
     varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters += ['source_z_bias_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters += ['lens_z_bias_%d'%i for i in xrange(tomo_N_lens)]

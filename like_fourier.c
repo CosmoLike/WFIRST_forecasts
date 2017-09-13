@@ -310,7 +310,7 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
   static double *ell;
   static double *ell_Cluster;
   static double darg;
-  double chisqr,a,log_L_prior=0.0;
+  double chisqr,a,log_L_prior=0.0, log_L_GRS=0.0;
   
   if(ell==0){
     pred= create_double_vector(0, like.Ndata-1);
