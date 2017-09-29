@@ -24,7 +24,7 @@
 #include "../cosmolike_core/theory/basics.c"
 #include "../cosmolike_core/theory/structs.c"
 #include "../cosmolike_core/theory/parameters.c"
-#include "../cosmolike_core/emu13/emu.c"
+#include "../cosmolike_core/emu17/P_cb/emu.c"
 #include "../cosmolike_core/theory/recompute.c"
 #include "../cosmolike_core/theory/cosmo3D.c"
 #include "../cosmolike_core/theory/redshift.c"
@@ -517,7 +517,7 @@ double log_like_wrapper(input_cosmo_params ic, input_nuisance_params in)
   init_priors("none","none","PhotoBAO","none");
   init_probes("shear_shear");
   // init_probes("all_2pt");
-  init_Pdelta("Halofit",0.8,0.35);
+  init_Pdelta("emu",0.8,0.35);
   // init_Pdelta("linear",0.8,0.35);
   compute_data_vector("fid",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.35,1.5,1.65,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9);
   //  compute_data_vector("mu1_Sigma0",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,1.,1.35,1.5,1.65,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9);

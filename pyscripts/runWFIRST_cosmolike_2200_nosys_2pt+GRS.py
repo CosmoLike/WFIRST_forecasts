@@ -15,7 +15,7 @@ chain_file = os.path.join(dirname, "./like/like_WFIRST_all_2pt+GRS_trade%d"%(NTR
 ############standard code ###############
 initcosmo()
 init_GRS(NTRADE)
-initbins(20,20.0,5000.0,5000.0,10.0,7)
+initbins(20,20.0,5000.0,5000.0,10.0,7,10)
 initsurvey("WFIRST")
 initgalaxies(file_source_z,file_lens_z,"gaussian","gaussian","redmagic")
 initpriors("none","none","PhotoBAO","none")

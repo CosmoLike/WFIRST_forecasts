@@ -12,7 +12,7 @@ cov_file = os.path.join(dirname, "cov/cov_Multi_Probe_WFIRST_4.500000e+01_2.2000
 chain_file = os.path.join(dirname, "./like/like_WFIRST_4.500000e+01_2.200000e+03_Rmin10_Ncl20_Ntomo10_no_sys_shear")
 
 initcosmo()
-initbins(20,20.0,5000.0,5000.0,10.0,7)
+initbins(20,20.0,5000.0,5000.0,10.0,7,10)
 initsurvey("WFIRST")
 initgalaxies(file_source_z,file_lens_z,"gaussian","gaussian","redmagic")
 initclusters()

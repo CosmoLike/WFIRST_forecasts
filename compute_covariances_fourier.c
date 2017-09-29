@@ -22,7 +22,7 @@
 #include "../cosmolike_core/theory/basics.c"
 #include "../cosmolike_core/theory/structs.c"
 #include "../cosmolike_core/theory/parameters.c"
-#include "../cosmolike_core/emu13/emu.c"
+#include "../cosmolike_core/emu17/P_cb/emu.c"
 #include "../cosmolike_core/theory/recompute.c"
 #include "../cosmolike_core/theory/cosmo3D.c"
 #include "../cosmolike_core/theory/redshift.c"
@@ -527,7 +527,7 @@ int main(int argc, char** argv)
   int i,l,m,n,o,s,p,nl1,t,k;
   char OUTFILE[400],PATH[400];
   int N_scenarios=15;
-  static double scneario_table[15][2]={{1500.0,45.0},{2000.0,45.0},{2500.0,45.0},{3000.0,45.0},{3500.0,45.0},{4000.0,45.0},{10000.0,45.0},{18000.0,45.0},{2000.0,33.0},{1000.0,36.0},{2000.0,39.0},{2000.0,42.0},{2000.0,48.0},{2000.0,51.0},{2000.0,54.0}};
+  static double scneario_table[15][2]={{1500.0,45.0},{2000.0,45.0},{2500.0,45.0},{3000.0,45.0},{3500.0,45.0},{4000.0,45.0},{10000.0,45.0},{18000.0,45.0},{2000.0,33.0},{2000.0,36.0},{2000.0,39.0},{2000.0,42.0},{2000.0,48.0},{2000.0,51.0},{2000.0,54.0}};
   
   int hit=atoi(argv[1]);
   
