@@ -7,16 +7,18 @@ import math, numpy as np
 from numpy import linalg as LA
 import numpy as np
 
-infile =['cov/cov_3x2pt_3.300000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_3.600000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_3.900000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.200000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.800000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_5.100000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_5.400000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_1.500000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_2.500000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_3.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_3.500000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_4.000000e+03_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_1.000000e+04_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_1.800000e+04_WFIRST_Ncl15_Ntomo10','cov/cov_3x2pt_4.500000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10']
+# infile =['cov/cov_3x2pt_3.300000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_3.600000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_3.900000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.200000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.800000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_5.100000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_5.400000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_1.500000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_2.500000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_3.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_3.500000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_4.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_1.000000e+04_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_1.800000e+04_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20','cov/cov_3x2pt_4.500000e+01_2.000000e+03_WFIRST_Ncl15_Ntomo10_lmax5000_lmin_20']
+
+infile =['cov/cov_3x2pt_cluster_4.500000e+01_2.000000e+03_WFIRST']
 
 nggl = 45
-ngcl = 0
+ngcl = 26
 nlens = 10
-nlenscl=0 # 3 if set_cluster_DES, 4 if set_cluster_LSST 
+nlenscl=4 # 3 if set_cluster_DES, 4 if set_cluster_LSST 
 nshear = 55
 ncl=15
-nclgcl=0
-nrich=0
+nclgcl=2
+nrich=7 # 7 for WFIRST
 
 ndata = (nshear+nggl+nlens)*ncl+nlenscl*nrich+nrich*ngcl*nclgcl #??? for WFIRST
 n2pt = (nshear+nggl+nlens)*ncl #(55+?+4)*20 for WFIRST
@@ -126,48 +128,48 @@ for k in range(0,15):
 	# f.close()
 
 
-	# # ############### invert flull2pt+clusterN+clusterWL covariance #################
-	# precond = 1.e-7
-	# for i in range(0,ncluster):
-	#   cov[n2pt+i,:]*= precond
-	#   cov[:,n2pt+i]*= precond
-	# inv = LA.inv(cov)
-	# a = np.sort(LA.eigvals(cov))
-	# print "min+max eigenvalues of full 2ptclusterN+clusterWL pre-conditioned matrix:"
-	# print np.min(a), np.max(a)
-	# if (np.min(a)<0):
-	#   print "WARNING  WARNING: %s is not positive definite! WARNING!" % (infile[k])
-	# for i in range(0,ncluster):
-	#   inv[n2pt+i,:]*= precond
-	#   inv[:,n2pt+i]*= precond
+	# # ############### invert full2pt+clusterN+clusterWL covariance #################
+	precond = 1.e-7
+	for i in range(0,ncluster):
+	  cov[n2pt+i,:]*= precond
+	  cov[:,n2pt+i]*= precond
+	inv = LA.inv(cov)
+	a = np.sort(LA.eigvals(cov))
+	print "min+max eigenvalues of full 2ptclusterN+clusterWL pre-conditioned matrix:"
+	print np.min(a), np.max(a)
+	if (np.min(a)<0):
+	  print "WARNING  WARNING: %s is not positive definite! WARNING!" % (infile[k])
+	for i in range(0,ncluster):
+	  inv[n2pt+i,:]*= precond
+	  inv[:,n2pt+i]*= precond
 
-	# outfile = infile[k]+"_2pt_clusterN_clusterWL_inv"
-	# f = open(outfile, "w")
-	# for i in range(0,ndata):
-	#   for j in range(0,ndata):
-	#     f.write("%d %d %e\n" %( i,j, inv[i,j]))
-	# f.close()
+	outfile = infile[k]+"_2pt_clusterN_clusterWL_inv"
+	f = open(outfile, "w")
+	for i in range(0,ndata):
+	  for j in range(0,ndata):
+	    f.write("%d %d %e\n" %( i,j, inv[i,j]))
+	f.close()
 
 
 
 	# # ############### invert clusterN+clusterWL covariance #################
-	# inv = LA.inv(cov[n2pt:n2pt+nclusterN_WL,n2pt:n2pt+nclusterN_WL])
-	# a = np.sort(LA.eigvals(cov[n2pt:n2pt+nclusterN_WL,n2pt:n2pt+nclusterN_WL]))
-	# print "min+max eigenvalues of clusterN_WL pre-conditioned matrix:"
-	# print np.min(a), np.max(a)
-	# if (np.min(a)<0):
-	#   print "WARNING  WARNING: %s is not positive definite! WARNING!" % (infile[k])
+	inv = LA.inv(cov[n2pt:n2pt+nclusterN_WL,n2pt:n2pt+nclusterN_WL])
+	a = np.sort(LA.eigvals(cov[n2pt:n2pt+nclusterN_WL,n2pt:n2pt+nclusterN_WL]))
+	print "min+max eigenvalues of clusterN_WL pre-conditioned matrix:"
+	print np.min(a), np.max(a)
+	if (np.min(a)<0):
+	  print "WARNING  WARNING: %s is not positive definite! WARNING!" % (infile[k])
 
-	# for i in range(0,ncluster):
-	#   inv[i,:]*= precond
-	#   inv[:,i]*= precond
+	for i in range(0,ncluster):
+	  inv[i,:]*= precond
+	  inv[:,i]*= precond
 
-	# outfile = infile[k]+"_clusterN_clusterWL_inv"
-	# f = open(outfile, "w")
-	# for i in range(0,nclusterN_WL):
-	#   for j in range(0,nclusterN_WL):
-	#     f.write("%d %d %e\n" %( i,j, inv[i,j]))
-	# f.close()
+	outfile = infile[k]+"_clusterN_clusterWL_inv"
+	f = open(outfile, "w")
+	for i in range(0,nclusterN_WL):
+	  for j in range(0,nclusterN_WL):
+	    f.write("%d %d %e\n" %( i,j, inv[i,j]))
+	f.close()
 
 	# ############### invert 2pt+clusterN covariance #################
 	# inv = LA.inv(cov[0:n2pt+ncluster,0:n2pt+ncluster])

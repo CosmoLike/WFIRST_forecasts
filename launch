@@ -1,0 +1,77 @@
+#halo
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_10k ./runWFIRST_10000_45_nosys_2pt_MG.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_1500 ./runWFIRST_1500_45_nosys_2pt_MG.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_2k ./runWFIRST_2000_45_nosys_2pt_MG.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_2500 ./runWFIRST_2500_45_nosys_2pt_MG.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_3k ./runWFIRST_3000_45_nosys_2pt_MG.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_3500 ./runWFIRST_3500_45_nosys_2pt_MG.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_4000 ./runWFIRST_4000_45_nosys_2pt_MG.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_2k_cluster ./runWFIRST_2000_45_nosys_2pt_cluster.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+
+
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_10k ./runWFIRST_10000_45_nosys_2pt.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_1500 ./runWFIRST_1500_45_nosys_2pt.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_2k ./runWFIRST_2000_45_nosys_2pt.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_2500 ./runWFIRST_2500_45_nosys_2pt.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_3k ./runWFIRST_3000_45_nosys_2pt.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_3500 ./runWFIRST_3500_45_nosys_2pt.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /halo_nobackup/sunglass/teifler/output/ -e /halo_nobackup/sunglass/teifler/output/ -N W45_4000 ./runWFIRST_4000_45_nosys_2pt.py > /halo_nobackup/sunglass/teifler/myoutput1.log
+
+
+
+
+#aurora
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W45_18k ./runWFIRST_18000_45_nosys_2pt_MG.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W33_2000 ./runWFIRST_2000_33_nosys_2pt_MG.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W36_2000 ./runWFIRST_2000_36_nosys_2pt_MG.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W39_2000 ./runWFIRST_2000_39_nosys_2pt_MG.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W42_2000 ./runWFIRST_2000_42_nosys_2pt_MG.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W48_2000 ./runWFIRST_2000_48_nosys_2pt_MG.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W51_2000 ./runWFIRST_2000_51_nosys_2pt_MG.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W54_2000 ./runWFIRST_2000_54_nosys_2pt_MG.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W45_18k ./runWFIRST_18000_45_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W33_2k ./runWFIRST_2000_33_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W36_2k ./runWFIRST_2000_36_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W39_2 ./runWFIRST_2000_39_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W42_2k ./runWFIRST_2000_42_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W45_2 ./runWFIRST_2000_45_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W48_2k ./runWFIRST_2000_48_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W51_2 ./runWFIRST_2000_51_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+qsub -S /bin/bash -V -l select=1:ncpus=16:mem=1GB -l place=free -l walltime=192:00:00 -q verylongq -o /aurora_nobackup/sunglass/teifler/output/ -e /aurora_nobackup/sunglass/teifler/output/ -N W54_2 ./runWFIRST_2000_54_nosys_2pt.py > /aurora_nobackup/sunglass/teifler/myoutput1.log
+
+
+
+
