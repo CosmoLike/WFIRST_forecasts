@@ -24,10 +24,11 @@ def read_invcov(cov_filename):
 		invcov[int(covfile[i,0]),int(covfile[i,1])]=covfile[i,2]
 	return invcov
 
-def FM(FM_params,invcov):
+def FM(FM_params,invcov,step_width =1.0):
 	print "\n\n--------------------------------------------"
 	print "Running Cosmolike inFisher Matrix Mode"
 	print "--------------------------------------------\n"
+	print "step width = %.2f*fiducial_sigma" % (step_width)
 	ndata = invcov.shape[0]
 	npar = len(FM_params)
 	derivs = np.zeros((npar,ndata))
@@ -44,7 +45,7 @@ def FM(FM_params,invcov):
 		cosmo_min = InputCosmologyParams().fiducial()
 		cosmo_max = InputCosmologyParams().fiducial()
 		p0 = getattr(cosmo_fid,p)
-		dp = getattr(cosmo_sigma,p)/2.
+		dp = getattr(cosmo_sigma,p)/step_width
 		setattr(cosmo_min, p, p0-dp)
 		setattr(cosmo_max, p, p0+dp)
 		write_datav(file1,cosmo_min,nuisance_fid)
@@ -63,7 +64,7 @@ def FM(FM_params,invcov):
 	ind_w0 = FM_params.index("w0") if "w0" in FM_params else -1	
 	ind_wa = FM_params.index("wa") if "wa" in FM_params else -1	
 	if ((ind_w0 > -1) & (ind_wa > -1)):
-		FOM = np.sqrt(FMinv[ind_w0,ind_w0]*FMinv[ind_wa,ind_wa] -FMinv[ind_w0,ind_wa]*FMinv[ind_wa,ind_w0])
+		FOM = 1./np.sqrt(FMinv[ind_w0,ind_w0]*FMinv[ind_wa,ind_wa] -FMinv[ind_w0,ind_wa]*FMinv[ind_wa,ind_w0])
 		print "FoM = %e" %(FOM)
 
 file_source_z = os.path.join(dirname, "zdistris/redshifts_All_0.txt")
@@ -76,7 +77,8 @@ init_WFIRST(file_source_z,file_lens_z)
 invcov = read_invcov(cov_file)
 FM_params= sample_cosmology_only(MG=True)
 FM(FM_params,invcov)
-
+#do it once more with different step width to check stability of derivatives
+FM(FM_params,invcov,step_width =0.5)
 
 
 #sample_params = sample_cosmology_shear_nuisance(get_N_tomo_shear())
