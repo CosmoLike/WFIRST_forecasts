@@ -40,30 +40,78 @@ def FM(FM_params,invcov,step_width =1.0):
 	cosmo_fid = InputCosmologyParams().fiducial()
 	cosmo_sigma = InputCosmologyParams().fiducial_sigma()
 	nuisance_fid = InputNuisanceParams().fiducial()
+	nuisance_sigma = InputNuisanceParams().fiducial_sigma()
 	file1 = "FM_datav"
 	n = 0
 	for p in FM_params:
+		try:
+			tomo = int(p[-1])+1
+		except ValueError:
+			tomo = 0
 		print "FM: evaluting derivative for parameter %s"%(p)
-		cosmo_var = InputCosmologyParams().fiducial()
-		cosmo_max = InputCosmologyParams().fiducial()
-		p0 = getattr(cosmo_fid,p)
-		dp = getattr(cosmo_sigma,p)*step_width
+		if (p in InputCosmologyParams().names()):
+			cosmo_var = InputCosmologyParams().fiducial()
+			p0 = getattr(cosmo_fid,p)
+			dp = getattr(cosmo_sigma,p)*step_width
 
-		setattr(cosmo_var, p, p0-2.*dp)
-		write_datav(file1,cosmo_var,nuisance_fid)
-		dv_mm = np.genfromtxt(file1)[:,1]
+			setattr(cosmo_var, p, p0-2.*dp)
+			write_datav(file1,cosmo_var,nuisance_fid)
+			dv_mm = np.genfromtxt(file1)[:,1]
 
-		setattr(cosmo_var, p, p0-dp)
-		write_datav(file1,cosmo_var,nuisance_fid)
-		dv_m = np.genfromtxt(file1)[:,1]
+			setattr(cosmo_var, p, p0-dp)
+			write_datav(file1,cosmo_var,nuisance_fid)
+			dv_m = np.genfromtxt(file1)[:,1]
 
-		setattr(cosmo_var, p, p0+dp)
-		write_datav(file1,cosmo_var,nuisance_fid)
-		dv_p = np.genfromtxt(file1)[:,1]
+			setattr(cosmo_var, p, p0+dp)
+			write_datav(file1,cosmo_var,nuisance_fid)
+			dv_p = np.genfromtxt(file1)[:,1]
 
-		setattr(cosmo_var, p, p0+2.*dp)
-		write_datav(file1,cosmo_var,nuisance_fid)
-		dv_pp = np.genfromtxt(file1)[:,1]
+			setattr(cosmo_var, p, p0+2.*dp)
+			write_datav(file1,cosmo_var,nuisance_fid)
+			dv_pp = np.genfromtxt(file1)[:,1]	
+		elif (tomo):
+			pshort = p[:-2]
+			i = int(p[-1])
+			np_var = InputNuisanceParams().fiducial()
+			p0 = getattr(nuisance_fid,pshort)[i]
+			dp = getattr(nuisance_sigma,pshort)[i]*step_width*10.
+
+			getattr(np_var, pshort)[i]= p0-2.*dp
+			write_datav(file1,cosmo_fid,np_var)
+			dv_mm = np.genfromtxt(file1)[:,1]
+
+			getattr(np_var, pshort)[i]= p0-dp
+			write_datav(file1,cosmo_fid,np_var)
+			dv_m = np.genfromtxt(file1)[:,1]
+
+			getattr(np_var, pshort)[i]= p0+dp
+			write_datav(file1,cosmo_fid,np_var)
+			dv_p = np.genfromtxt(file1)[:,1]
+
+			getattr(np_var, pshort)[i]= p0+2.*dp
+			write_datav(file1,cosmo_fid,np_var)
+			dv_pp = np.genfromtxt(file1)[:,1]
+		else:
+			np_var = InputNuisanceParams().fiducial()
+			p0 = getattr(nuisance_fid,p)
+			dp = getattr(nuisance_sigma,p)*step_width*10.
+
+			setattr(np_var, p, p0-2.*dp)
+			write_datav(file1,cosmo_fid,np_var)
+			dv_mm = np.genfromtxt(file1)[:,1]
+
+			setattr(np_var, p, p0-dp)
+			write_datav(file1,cosmo_fid,np_var)
+			dv_m = np.genfromtxt(file1)[:,1]
+
+			setattr(np_var, p, p0+dp)
+			write_datav(file1,cosmo_fid,np_var)
+			dv_p = np.genfromtxt(file1)[:,1]
+
+			setattr(np_var, p, p0+2.*dp)
+			write_datav(file1,cosmo_fid,np_var)
+			dv_pp = np.genfromtxt(file1)[:,1]
+
 
 		#five point method for the first derivative
 		derivs[n,:] = (-dv_pp +8.*dv_p -8.*dv_m+dv_mm)/(12.*dp)
@@ -91,24 +139,27 @@ cov_file = os.path.join(dirname, "cov/cov_3x2pt_4.500000e+01_1.800000e+04_WFIRST
 init_WFIRST(file_source_z,file_lens_z)
 
 invcov = read_invcov(cov_file)
-FM_params= sample_cosmology_only(MG=False)
-FM1 = FM(FM_params,invcov,step_width =0.03)
+#FM_params= sample_cosmology_only(MG=False)
+FM_params = sample_cosmology_shear_nuisance(get_N_tomo_shear())
+FM1 = FM(FM_params,invcov,step_width =2.0)
 #do it once more with different step width to check stability of derivatives
-FM2 = FM(FM_params,invcov,step_width =0.04)
+#FM2 = FM(FM_params,invcov,step_width =4.0)
 
-#cor1 = np.zeros((npar,npar))
-#cor2 = np.zeros((npar,npar))
-#for i in range(0,npar):
-#	for j in range(0,npar):
-#		cor1[i,j] = FM1[i,j]/np.sqrt(FM1[i,i]*FM1[j,j])
-#		cor2[i,j] = FM2[i,j]/np.sqrt(FM2[i,i]*FM2[j,j])
-#plt.figure()
-#plt.subplot(2,1,1)
-#plt.imshow(cor1, interpolation="nearest")
-#plt.subplot(2,1,2)
-#plt.imshow(cor2, interpolation="nearest")
-#plt.colorbar()
-#plt.show()
+
+npar = FM1.shape[0]
+cor1 = np.zeros((npar,npar))
+cor2 = np.zeros((npar,npar))
+for i in range(0,npar):
+	for j in range(0,npar):
+		cor1[i,j] = FM1[i,j]/np.sqrt(FM1[i,i]*FM1[j,j])
+		cor2[i,j] = FM2[i,j]/FM1[i,j]
+plt.figure()
+plt.subplot(2,1,1)
+plt.imshow(cor1, interpolation="nearest")
+plt.subplot(2,1,2)
+plt.imshow(cor2, interpolation="nearest")
+plt.colorbar()
+plt.show()
 
 
 #sample_params = sample_cosmology_shear_nuisance(get_N_tomo_shear())
