@@ -35,7 +35,7 @@
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
-#include "../cosmolike_core/theory/init.c"
+#include "init_WFIRST_forecasts.c"
 #include "like_grs.c"
 
 double C_shear_tomo_sys(double ell,int z1,int z2);
@@ -268,9 +268,9 @@ int set_nuisance_ia(double A_ia, double beta_ia, double eta_ia, double eta_ia_hi
   if (nuisance.beta_ia < -1.0 || nuisance.beta_ia > 3.0) return 0;
   if (nuisance.eta_ia < -3.0 || nuisance.eta_ia> 3.0) return 0;
   if (nuisance.eta_ia_highz < -1.0 || nuisance.eta_ia_highz> 1.0) return 0;
-  if(like.IA!=0){
-   if (check_LF()) return 0;
-  }
+  // if(like.IA!=0){
+  //  if (check_LF()) return 0;
+  // }
 return 1;
 }
 

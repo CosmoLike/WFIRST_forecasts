@@ -1,35 +1,61 @@
 import numpy as np
 from chainconsumer import ChainConsumer
 
-
-def threechain_multi_plot(filename, out, chainnames, paranames):
+def twochain_single_plot(filename, out, chainnames, paranames):
 	d1 = np.genfromtxt(filename[0])
 	d2 = np.genfromtxt(filename[1])
-	d3 = np.genfromtxt(filename[2])
 	c = ChainConsumer()
-	c.add_chain(d1[50000:,(0,8)], parameters=paranames, name =chainnames[0])
-	c.add_chain(d2[50000:,(0,8)], name =chainnames[1])
-	c.add_chain(d3[50000:,(0,8)], name =chainnames[2])
+	c.add_chain(d1[20000:,(3,4)], parameters=paranames, name =chainnames[0])
+	c.add_chain(d2[20000:,(3,4)], name =chainnames[1])
 	c.configure(shade=True, shade_alpha=0.2, bar_shade=True)
 	#c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
 	fig = c.plotter.plot(figsize=2.0,filename="/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
 	
 
 
-filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3.300000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_5.400000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG"]
-chainnames=[r"45 gal/arcmin$^2$", r"33 gal/arcmin$^2$", r"54 gal/arcmin$^2$"]
-paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-threechain_multi_plot(filename,"WF_ngal.pdf",chainnames,paranames)
+filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_LSST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_LSST_4.500000e+01_1.800000e+04_Rmin10_Ncl15_Ntomo10_no_sys"]
+chainnames=[r"WFIRST multi-band",r"WFIRST single band+LSST"]
+paranames=[r"$w_0$", r"$w_a$"]
+twochain_single_plot(filename,"WF_ext_LSST.pdf",chainnames,paranames)
 
-filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_1.500000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_4.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG"]
-chainnames=[r"2000 deg$^2$", r"1500 deg$^2$", r"4000 deg$^2$"]
-paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-threechain_multi_plot(filename,"WF_area.pdf",chainnames,paranames)
 
-filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_1.000000e+04_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LSST_4.500000e+01_1.800000e+04_Rmin10_Ncl15_Ntomo10_no_sys_MG"]
-chainnames=["WFIRST std", r"WFIRST ext (10000 deg$^2$)", "WFIRST+LSST"]
-paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-threechain_multi_plot(filename,"WF_ext_LSST.pdf",chainnames,paranames)
+filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_ALL_0cut_4.428000e+01_2.000000e+03_Rmin10_Ncl20_Ntomo10_no_sys","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_nonifc_0cut_3.543000e+01_2.000000e+03_Rmin10_Ncl20_Ntomo10_no_sys"]
+chainnames=[r"WFIRST Cosmic Shear without IFC",r"WFIRST Cosmic Shear with IFC"]
+paranames=[r"$w_0$", r"$w_a$"]
+twochain_single_plot(filename,"WF_IFC_study.pdf",chainnames,paranames)
+
+
+
+
+
+# def threechain_multi_plot(filename, out, chainnames, paranames):
+# 	d1 = np.genfromtxt(filename[0])
+# 	d2 = np.genfromtxt(filename[1])
+# 	d3 = np.genfromtxt(filename[2])
+# 	c = ChainConsumer()
+# 	c.add_chain(d1[50000:,(0,8)], parameters=paranames, name =chainnames[0])
+# 	c.add_chain(d2[50000:,(0,8)], name =chainnames[1])
+# 	c.add_chain(d3[50000:,(0,8)], name =chainnames[2])
+# 	c.configure(shade=True, shade_alpha=0.2, bar_shade=True)
+# 	#c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
+# 	fig = c.plotter.plot(figsize=2.0,filename="/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
+	
+
+
+# filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3.300000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_5.400000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG"]
+# chainnames=[r"45 gal/arcmin$^2$", r"33 gal/arcmin$^2$", r"54 gal/arcmin$^2$"]
+# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
+# threechain_multi_plot(filename,"WF_ngal.pdf",chainnames,paranames)
+
+# filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_1.500000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_4.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG"]
+# chainnames=[r"2000 deg$^2$", r"1500 deg$^2$", r"4000 deg$^2$"]
+# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
+# threechain_multi_plot(filename,"WF_area.pdf",chainnames,paranames)
+
+# filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_1.000000e+04_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LSST_4.500000e+01_1.800000e+04_Rmin10_Ncl15_Ntomo10_no_sys_MG"]
+# chainnames=["WFIRST std", r"WFIRST ext (10000 deg$^2$)", "WFIRST+LSST"]
+# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
+# threechain_multi_plot(filename,"WF_ext_LSST.pdf",chainnames,paranames)
 
 
 

@@ -36,7 +36,7 @@
 #include "../cosmolike_core/theory/covariances_3D.c"
 #include "../cosmolike_core/theory/covariances_fourier.c"
 #include "../cosmolike_core/theory/covariances_cluster.c"
-#include "../cosmolike_core/theory/init.c"
+#include "init_WFIRST_forecasts.c"
 
 void run_cov_N_N (char *OUTFILE, char *PATH, int nzc1, int nzc2,int start);
 void run_cov_cgl_N (char *OUTFILE, char *PATH, double *ell_Cluster, double *dell_Cluster,int N1, int nzc2, int start);
@@ -542,7 +542,7 @@ int main(int argc, char** argv)
 
   //RUN MODE setup
   init_cosmo();
-  init_binning_fourier(15,20.0,15000.0,5000.0,10.0,7,10);
+  init_binning_fourier(15,20.0,15000.0,3000.0,10.0,7,10);
   init_survey("WFIRST");
   init_galaxies("zdistris/redshifts_All_0.txt","zdistris/redshifts_All_0.txt", "none", "none", "source");
   init_clusters();
@@ -578,7 +578,7 @@ int main(int argc, char** argv)
     
     printf("area: %le ngal: %le\n",survey.area,survey.n_gal);
 
-    sprintf(PATH,"/aurora_nobackup/sunglass/teifler/covparallel2/cov_3x2pt_%le_%le_",survey.n_gal,survey.area);
+    sprintf(PATH,"/halo_nobackup/sunglass/teifler/covparallel2/WFIRST_3x2pt_%le_%le_",survey.n_gal,survey.area);
     
 
     printf("----------------------------------\n");  
