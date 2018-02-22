@@ -193,6 +193,17 @@ int set_cosmology_params(double OMM, double S8, double NS, double W0,double WA, 
   if (cosmology.w0 < -2.1 || cosmology.w0 > -0.0) return 0;
   if (cosmology.wa < -2.6 || cosmology.wa > 2.6) return 0;
   if (cosmology.h0 < 0.4 || cosmology.h0 > 0.9) return 0;
+  //CH BEGINS 
+  //CH: to use for running planck15_BA0_w0_wa prior alone) 
+  //printf("like_fourier.c from WFIRST_forecasts: cosmology bounds set for running with planck15_BA0_w0_wa prior\n");
+  //if (cosmology.Omega_m < 0.05 || cosmology.Omega_m > 0.6) return 0; 
+  //if (cosmology.omb < 0.01 || cosmology.omb > 0.1) return 0; 
+  //if (cosmology.sigma_8 < 0.5 || cosmology.sigma_8 > 1.1) return 0; 
+  //if (cosmology.n_spec < 0.84 || cosmology.n_spec > 1.06) return 0; 
+  //if (cosmology.w0 < -2.1 || cosmology.w0 > 1.5) return 0; 
+  //if (cosmology.wa < -5.0 || cosmology.wa > 2.6) return 0; 
+  //if (cosmology.h0 < 0.3 || cosmology.h0 > 0.9) return 0; 
+  //CH ENDS
   return 1;
 }
 
@@ -369,6 +380,8 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
   if(like.SN==1) log_L_prior+=log_L_SN();
   if(like.BAO==1) log_L_prior+=log_L_BAO();
   if(like.Planck==1) log_L_prior+=log_L_Planck();
+  if(like.Planck15_BAO_w0wa==1) log_L_prior+=log_L_Planck15_BAO_w0wa();//CH
+  if(like.Planck15_BAO_H070p6_JLA_w0wa==1) log_L_prior+=log_L_Planck15_BAO_H070p6_JLA_w0wa();//CH
   if(like.IA!=0) log_L_prior+=log_L_ia();
   if(like.IA!=0) log_L_prior+=log_like_f_red();
   if(like.wlphotoz!=0) log_L_prior+=log_L_wlphotoz();
@@ -544,6 +557,7 @@ double log_like_wrapper(input_cosmo_params ic, input_nuisance_params in)
   init_clusters();
   init_IA("none", "GAMA");
   init_priors("none","none","PhotoBAO","none");
+  //init_priors("none","none","none","Planck15_BAO_w0wa"); //CH: for running with Planck15_BAO_w0wa prior
   init_probes("all_2pt_clusterN_clusterWL");
   // init_probes("all_2pt");
   init_Pdelta("halofit",0.8,0.35);
@@ -562,6 +576,15 @@ double log_like_wrapper(input_cosmo_params ic, input_nuisance_params in)
   // end = clock();
   // time_spent = (double)(end - begin) / CLOCKS_PER_SEC;      
   // printf("timespent %le\n",time_spent);
+  
+  //CH BEGINS
+  //for testing Planck15_BAO_w0wa prior alone
+  //compute_data_vector("fid",3.50989e-01,8.04675e-01,9.64061e-01,-5.05518e-01,-1.46884e+00,5.46245e-02,6.39839e-01,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9);
+  //expect 0.0 for the following
+  //log_multi_like(3.50989e-01,8.04675e-01.1,9.64061e-01,-5.05518e-01,-1.46884e+00,5.46245e-02,6.39839e-01,           0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9);
+  //expect -13.195605 for the following
+  //log_multi_like(0.35449914, 0.81272201,0.97370111, -0.51057289,-1.48353327,0.05517077,0.64623714,                    0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9); 
+  //CH ENDS
   
   return 0;
 }
