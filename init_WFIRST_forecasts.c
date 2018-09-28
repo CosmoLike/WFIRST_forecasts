@@ -8,7 +8,7 @@ void init_survey(char *surveyname);
 void init_galaxies(char *SOURCE_ZFILE, char *LENS_ZFILE, char *lensphotoz, char *sourcephotoz, char *galsample);
 void init_cosmo();
 void init_cosmo_runmode(char *runmode);
-void init_binning_fourier(int Ncl, double lmin, double lmax, double lmax_shear, double Rmin_bias, int cluster_rich_Nbin, int Ntomo);
+void init_binning_fourier(int Ncl, double lmin, double lmax, double lmax_shear, double Rmin_bias, int Ntomo);
 void init_probes(char *probes);
 
 
@@ -175,7 +175,7 @@ void init_cosmo()
   printf("-------------------------------------------\n");
   set_cosmological_parameters_to_Planck_15_TT_TE_EE_lowP();
   //set_cosmological_parameters_to_Joe();
-  sprintf(pdeltaparams.runmode,"Halofit");
+  //sprintf(pdeltaparams.runmode,"emu");
 }
 void init_cosmo_runmode(char *runmode)
 {
@@ -189,7 +189,7 @@ void init_cosmo_runmode(char *runmode)
   printf("pdeltaparams.runmode =%s\n",pdeltaparams.runmode);
 }
 
-void init_binning_fourier(int Ncl, double lmin, double lmax, double lmax_shear, double Rmin_bias, int cluster_rich_Nbin, int Ntomo)
+void init_binning_fourier(int Ncl, double lmin, double lmax, double lmax_shear, double Rmin_bias, int Ntomo)
 {
   printf("-------------------------------------------\n");
   printf("Initializing Binning\n");
@@ -212,7 +212,6 @@ void init_binning_fourier(int Ncl, double lmin, double lmax, double lmax_shear, 
       k=k+1;
     }
   } 
-  Cluster.N200_Nbin = cluster_rich_Nbin;
   Cluster.lbin = k;
   Cluster.l_max = lmax; //clusters go to highly nonlin as std
   printf("%le %le %d\n",Cluster.l_min,Cluster.l_max,Cluster.lbin);
@@ -461,7 +460,6 @@ void init_source_sample(char *sourcephotoz)
 
   printf("Source Sample Redshift Errors set to %s: redshift.shear_photoz=%d\n",sourcephotoz,redshift.shear_photoz);
   
-  
   if (strcmp(survey.name,"LSST")==0 || strcmp(survey.name,"WFIRST")==0) {
     set_equal_tomo_bins();
     if ((redshift.shear_photoz==1) || (redshift.shear_photoz==2) || (redshift.shear_photoz==3)){
@@ -520,8 +518,7 @@ void set_galaxies_source(void)
     tomo.clustering_zmax[i]      = tomo.shear_zmax[i];
     tomo.clustering_zmin[i]      = tomo.shear_zmin[i];
   }
-  tomo.clustering_zmin[0]=0.2; //multi-probe NG covs are very likely ill-conditioned if lenses at very low redshift is included 
-  survey.n_lens = survey.n_gal; 
+  tomo.clustering_zmin[0]=0.15; //multi-probe NG covs are very likely ill-conditioned if lenses at very low redshift is included 
 
   redshift.clustering_zdistrpar_zmin = redshift.shear_zdistrpar_zmin;
   redshift.clustering_zdistrpar_zmax = redshift.shear_zdistrpar_zmax;
@@ -548,8 +545,6 @@ void set_galaxies_source(void)
 }
 
 
-
-
 void set_clusters_LSST(){
   int i,j;
   //N200->M relationship from Murata et al. (2018)
@@ -557,7 +552,7 @@ void set_clusters_LSST(){
   nuisance.cluster_Mobs_alpha = 0.993; //fiducial: 0.993, flat prior [0.0, 2.0]
   nuisance.cluster_Mobs_beta = 0.0; //fiducial: 0.0, flat prior [-1.5, 1.5]
   nuisance.cluster_Mobs_sigma0 = 0.456; //fiducial: 0.456, flat prior [0.0, 1.5]
-  nuisance.cluster_Mobs_sigma_qm = -0.169; //fiducial: -0.169, flat prior [-1.5, 1.5]
+  nuisance.cluster_Mobs_sigma_qm = 0.0; //fiducial: -0.169, flat prior [-1.5, 1.5]
   nuisance.cluster_Mobs_sigma_qz = 0.0; //fiducial: 0.0, flat prior [-1.5, 1.5]
   //Compliteness parameters are not marinilized, but just fixed to 1.
   nuisance.cluster_completeness[0] = 1.0;
@@ -605,6 +600,7 @@ void set_clusters_LSST(){
   printf("Clusters set to LSST Y10\n");
   printf("Clusters cgl_Npowerspectra=%d\n",tomo.cgl_Npowerspectra);
 }
+
 
 void init_Pdelta(char *model,double nexp,double A_factor)
 {  
