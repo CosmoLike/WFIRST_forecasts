@@ -115,7 +115,7 @@ int count_rows(char* filename,const char delimiter){
   int count = 1;
   char *p;
 
-  p = &line;
+  p = line;
   while (*p != '\0')
   {
     if (*p == delimiter){
