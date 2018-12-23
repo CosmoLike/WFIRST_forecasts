@@ -517,8 +517,11 @@ void compute_data_vector(char *details, double OMM, double S8, double NS, double
   }
   fclose(F);
 }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> master
 void write_vector_wrapper(char *details, input_cosmo_params ic, input_nuisance_params in)
 {
   compute_data_vector(details, ic.omega_m, ic.sigma_8, ic.n_s, ic.w0, ic.wa, ic.omega_b, ic.h0, ic.MGSigma, ic.MGmu,
