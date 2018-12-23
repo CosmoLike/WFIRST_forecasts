@@ -29,7 +29,7 @@
 #include "../cosmolike_core/emu17/P_cb/emu.c"
 #include "../cosmolike_core/theory/recompute.c"
 #include "../cosmolike_core/theory/cosmo3D.c"
-#include "../cosmolike_core/theory/redshift.c"
+#include "../cosmolike_core/theory/redshift_spline.c"
 #include "../cosmolike_core/theory/halo.c"
 #include "../cosmolike_core/theory/HOD.c"
 #include "../cosmolike_core/theory/cosmo2D_fourier.c"
@@ -212,20 +212,22 @@ void run_cov_shear_cgl (char *OUTFILE, char *PATH, double *ell, double *dell, do
   nzs2 = Z2(N1);
   nzc2 = ZC(N2);
   nzs3 = ZSC(N2);
-  for (nN2 = 0; nN2 < Cluster.N200_Nbin; nN2 ++){
-    for( nl2 = 0; nl2 < Cluster.lbin; nl2 ++){
-      i = like.Ncl*N1+nl1;
-      j = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra)+Cluster.N200_Nbin*tomo.cluster_Nbin;
-      j += (N2*Cluster.N200_Nbin+nN2)*Cluster.lbin +nl2;          
-      c_g = 0.;
-      c_ng = 0.;
-      if (ell[nl1] < like.lmax_shear){
-        c_ng = cov_NG_shear_cgl(ell[nl1],ell_Cluster[nl2],nzs1, nzs2, nzc2, nN2,nzs3);
-        if (fabs(ell[nl1]/ell_Cluster[nl2] -1.) < 0.001){ 
-          c_g =cov_G_shear_cgl(ell[nl1],dell_Cluster[nl2],nzs1,nzs2, nzc2, nN2,nzs3);
+  for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
+    for (nN2 = 0; nN2 < Cluster.N200_Nbin; nN2 ++){
+      for( nl2 = 0; nl2 < Cluster.lbin; nl2 ++){
+        i = like.Ncl*N1+nl1;
+        j = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra)+Cluster.N200_Nbin*tomo.cluster_Nbin;
+        j += (N2*Cluster.N200_Nbin+nN2)*Cluster.lbin +nl2;          
+        c_g = 0.;
+        c_ng = 0.;
+        if (ell[nl1] < like.lmax_shear){
+          c_ng = cov_NG_shear_cgl(ell[nl1],ell_Cluster[nl2],nzs1, nzs2, nzc2, nN2,nzs3);
+          if (fabs(ell[nl1]/ell_Cluster[nl2] -1.) < 0.001){ 
+            c_g =cov_G_shear_cgl(ell[nl1],dell_Cluster[nl2],nzs1,nzs2, nzc2, nN2,nzs3);
+          }
         }
+        fprintf(F1,"%d %d %e %e %d %d %d %d %e %e\n",i,j,ell[nl1],ell_Cluster[nl2], nzs1, nzs2, nzc2, nzs3,c_g, c_ng);
       }
-      fprintf(F1,"%d %d %e %e %d %d %d %d %e %e\n",i,j,ell[nl1],ell_Cluster[nl2], nzs1, nzs2, nzc2, nzs3,c_g, c_ng);
     }
   }
   fclose(F1);
@@ -269,19 +271,21 @@ void run_cov_ggl_cgl (char *OUTFILE, char *PATH, double *ell, double *dell, doub
   zs = ZS(N1);
   nzc2 = ZC(N2);
   nzs3 = ZSC(N2);
-  for (nN2 = 0; nN2 < Cluster.N200_Nbin; nN2 ++){
-    for( nl2 = 0; nl2 < Cluster.lbin; nl2 ++){
-      i =   like.Ncl*(tomo.shear_Npowerspectra+N1)+nl1;
-      j = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra)+Cluster.N200_Nbin*tomo.cluster_Nbin;
-      j += (N2*Cluster.N200_Nbin+nN2)*Cluster.lbin +nl2;
+  for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
+    for (nN2 = 0; nN2 < Cluster.N200_Nbin; nN2 ++){
+      for( nl2 = 0; nl2 < Cluster.lbin; nl2 ++){
+        i = like.Ncl*(tomo.shear_Npowerspectra+N1)+nl1;
+        j = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra)+Cluster.N200_Nbin*tomo.cluster_Nbin;
+        j += (N2*Cluster.N200_Nbin+nN2)*Cluster.lbin +nl2;
 
-      c_g = 0; c_ng = 0.;
-      weight = test_kmax(ell[nl1],zl);
-      if (weight){
-        c_ng = cov_NG_ggl_cgl(ell[nl1],ell_Cluster[nl2],zl,zs, nzc2, nN2,nzs3);
-        if (fabs(ell[nl1]/ell_Cluster[nl2] -1.) < 0.1){c_g =cov_G_ggl_cgl(ell[nl1],dell_Cluster[nl2],zl,zs, nzc2, nN2,nzs3);}
+        c_g = 0; c_ng = 0.;
+        weight = test_kmax(ell[nl1],zl);
+        if (weight){
+          c_ng = cov_NG_ggl_cgl(ell[nl1],ell_Cluster[nl2],zl,zs, nzc2, nN2,nzs3);
+          if (fabs(ell[nl1]/ell_Cluster[nl2] -1.) < 0.1){c_g =cov_G_ggl_cgl(ell[nl1],dell_Cluster[nl2],zl,zs, nzc2, nN2,nzs3);}
+        }
+        fprintf(F1,"%d %d %e %e %d %d %d %d  %e %e\n",i,j,ell[nl1],ell_Cluster[nl2], zl, zs, nzc2, nzs3,c_g, c_ng);
       }
-      fprintf(F1,"%d %d %e %e %d %d %d %d  %e %e\n",i,j,ell[nl1],ell_Cluster[nl2], zl, zs, nzc2, nzs3,c_g, c_ng);
     }
   }
   fclose(F1);
@@ -321,22 +325,24 @@ void run_cov_cl_cgl (char *OUTFILE, char *PATH, double *ell, double *dell, doubl
   F1 =fopen(filename,"w");
   nzc2 = ZC(N2);
   nzs3 = ZSC(N2);
-  for (nN2 = 0; nN2 < Cluster.N200_Nbin; nN2 ++){
-    for( nl2 = 0; nl2 < Cluster.lbin; nl2 ++){
-      i = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+N1)+nl1;
-      j = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra)+Cluster.N200_Nbin*tomo.cluster_Nbin;
-      j += (N2*Cluster.N200_Nbin+nN2)*Cluster.lbin +nl2;
+  for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
+    for (nN2 = 0; nN2 < Cluster.N200_Nbin; nN2 ++){
+      for( nl2 = 0; nl2 < Cluster.lbin; nl2 ++){
+        i = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+N1)+nl1;
+        j = like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra)+Cluster.N200_Nbin*tomo.cluster_Nbin;
+        j += (N2*Cluster.N200_Nbin+nN2)*Cluster.lbin +nl2;
 
-      c_g = 0; c_ng = 0.;
-      weight = test_kmax(ell[nl1],N1);
-      if (weight){
-        c_ng = cov_NG_cl_cgl(ell[nl1],ell_Cluster[nl2],N1,N1, nzc2, nN2,nzs3);
-        if (fabs(ell[nl1]/ell_Cluster[nl2] -1.) < 0.1){
-          c_g =cov_G_cl_cgl(ell[nl1],dell_Cluster[nl2],N1,N1, nzc2, nN2,nzs3);
+        c_g = 0; c_ng = 0.;
+        weight = test_kmax(ell[nl1],N1);
+        if (weight){
+          c_ng = cov_NG_cl_cgl(ell[nl1],ell_Cluster[nl2],N1,N1, nzc2, nN2,nzs3);
+          if (fabs(ell[nl1]/ell_Cluster[nl2] -1.) < 0.1){
+            c_g =cov_G_cl_cgl(ell[nl1],dell_Cluster[nl2],N1,N1, nzc2, nN2,nzs3);
+          }
         }
-      }
-      fprintf(F1,"%d %d %e %e %d %d %d %d  %e %e\n",i,j,ell[nl1],ell_Cluster[nl2], N1,N1, nzc2, nzs3,c_g, c_ng);
+        fprintf(F1,"%d %d %e %e %d %d %d %d  %e %e\n",i,j,ell[nl1],ell_Cluster[nl2], N1,N1, nzc2, nzs3,c_g, c_ng);
         //printf("%d %d %e %e %d %d %d %d  %e %e\n",i,j,ell[nl1],ell_Cluster[nl2], N1,N1, nzc2, nzs3,c_g, c_ng);
+      }
     }
   }
   fclose(F1);
@@ -532,8 +538,11 @@ int main(int argc, char** argv)
   char OUTFILE[400],filename[400];
   
   int N_scenarios=1;
-  //static double scneario_table[15][2]={{1500.0,45.0},{2000.0,45.0},{2500.0,45.0},{3000.0,45.0},{3500.0,45.0},{4000.0,45.0},{10000.0,45.0},{18000.0,45.0},{2000.0,33.0},{2000.0,36.0},{2000.0,39.0},{2000.0,42.0},{2000.0,48.0},{2000.0,51.0},{2000.0,54.0}};
-  static double scneario_table[1][3]={{2000.0,51.0,107.0}};
+  //static double scenario_table[15][2]={{1500.0,45.0},{2000.0,45.0},{2500.0,45.0},{3000.0,45.0},{3500.0,45.0},{4000.0,45.0},{10000.0,45.0},{18000.0,45.0},{2000.0,33.0},{2000.0,36.0},{2000.0,39.0},{2000.0,42.0},{2000.0,48.0},{2000.0,51.0},{2000.0,54.0}};
+  // when using SNR=5 clustering sample
+  // double scenario_table[1][3]={{2000.0,51.0,107.0}};
+
+  double scenario_table[1][3]={{2000.0,51.0,0.25}};
   int hit=atoi(argv[1]);
   
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -546,9 +555,9 @@ int main(int argc, char** argv)
 
   //RUN MODE setup
   init_cosmo();
-  init_binning_fourier(15,20.0,15000.0,3000.0,10.0,10);
+  init_binning_fourier(25,30.0,15000.0,4000.0,21.0,10);
   init_survey("WFIRST");
-  init_galaxies("zdistris/zdistri_WFIRST_LSST_lensing_fine_bin","zdistris/zdistri_WFIRST_LSST_clustering_fine_bin", "none", "none", "source");
+  init_galaxies("zdistris/zdistri_WFIRST_LSST_lensing","zdistris/zdistri_WFIRST_LSST_clustering", "none", "none", "source");
   init_clusters();
   init_IA("none", "GAMA");
   
@@ -577,9 +586,9 @@ int main(int argc, char** argv)
 
   for(t=0;t<N_scenarios;t++){
     printf("----------------------------------\n");  
-    survey.area=scneario_table[t][0];
-    survey.n_gal=scneario_table[t][1];
-    survey.n_lens=scneario_table[t][2];    
+    survey.area=scenario_table[t][0];
+    survey.n_gal=scenario_table[t][1];
+    survey.n_lens=scenario_table[t][2];    
     
     printf("area: %le n_source: %le n_lens: %le\n",survey.area,survey.n_gal,survey.n_lens);
 
@@ -671,7 +680,11 @@ int main(int argc, char** argv)
         //printf("%d\n",k);
       }
     }
-    //cluster covariance 
+
+    //****************************** 
+    //******cluster covariance****** 
+    //******************************
+    
     sprintf(OUTFILE,"%s_nn_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
     for (l=0;l<tomo.cluster_Nbin; l++){
       for (m=0;m<tomo.cluster_Nbin; m++){
@@ -725,11 +738,11 @@ int main(int argc, char** argv)
        }
        k=k+1;
      }
-   }  
+   } 
    sprintf(OUTFILE,"%s_sscs_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
    for (l=0;l<tomo.shear_Npowerspectra; l++){
       for (m=0;m<tomo.cgl_Npowerspectra; m++){
-        for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
+        //for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
           if(k==hit){
             sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
             if (fopen(filename, "r") != NULL){exit(1);}
@@ -738,7 +751,7 @@ int main(int argc, char** argv)
             }
           }
           k=k+1;
-        }
+        //}
       }
     }
     // ggl X cluster
@@ -758,7 +771,7 @@ int main(int argc, char** argv)
     sprintf(OUTFILE,"%s_lscs_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
     for (l=0;l<tomo.ggl_Npowerspectra; l++){
       for (m=0;m<tomo.cgl_Npowerspectra; m++){
-        for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
+        //for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
           if(k==hit){
             sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
             if (fopen(filename, "r") != NULL){exit(1);}
@@ -767,7 +780,7 @@ int main(int argc, char** argv)
             }
           }       
           k=k+1;
-        }
+        //}
       }
     }
     // clustering X cluster
@@ -788,7 +801,7 @@ int main(int argc, char** argv)
     sprintf(OUTFILE,"%s_llcs_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);
     for (l=0;l<tomo.clustering_Npowerspectra; l++){
       for (m=0;m<tomo.cgl_Npowerspectra; m++){
-        for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
+        //for(nl1 = 0; nl1 < like.Ncl; nl1 ++){
           if(k==hit){
             sprintf(filename,"%s%s_%d",covparams.outdir,OUTFILE,k);
             if (fopen(filename, "r") != NULL){exit(1);}
@@ -797,7 +810,7 @@ int main(int argc, char** argv)
             }
           }
           k=k+1;
-        }
+        //}
       }
     }
   }

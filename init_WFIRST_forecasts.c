@@ -13,6 +13,7 @@ void init_probes(char *probes);
 
 
 void set_galaxies_source();
+void set_galaxies_redmagic();
 void set_clusters_LSST(); //set parameters for LSST/WFIRST forecasts
 void init_wlphotoz_stage3();
 void init_wlphotoz_stage4();
@@ -20,6 +21,7 @@ void init_lens_sample(char *lensphotoz, char *galsample);
 void init_source_sample(char *sourcephotoz);
 
 void init_clphotoz_source();
+void init_clphotoz_redmagic();
 void init_clusterMobs();
 void set_equal_tomo_bins();
 void init_IA(char *model,char *lumfct);
@@ -115,7 +117,7 @@ int count_rows(char* filename,const char delimiter){
   int count = 1;
   char *p;
 
-  p = &line;
+  p = line;
   while (*p != '\0')
   {
     if (*p == delimiter){
@@ -305,6 +307,14 @@ void init_probes(char *probes)
   printf("------------------------------\n");
   printf("Initializing Probes\n");
   printf("------------------------------\n"); 
+  printf("tomo.cluster_Nbin=%d\n",tomo.cluster_Nbin);
+  printf("tomo.cgl_Npowerspectra=%d\n",tomo.cgl_Npowerspectra);
+  printf("Cluster.lbin=%d\n",Cluster.lbin);
+  printf("Cluster.N200_Nbin=%d\n",Cluster.N200_Nbin);
+  printf("like.Ncl=%d\n",like.Ncl);
+  printf("tomo.shear_Npowerspectra=%d\n",tomo.shear_Npowerspectra);
+  printf("tomo.ggl_Npowerspectra=%d\n",tomo.ggl_Npowerspectra);
+  printf("tomo.clustering_Npowerspectra=%d\n",tomo.clustering_Npowerspectra);
 
   sprintf(like.probes,"%s",probes);
   if(strcmp(probes,"clusterN")==0){
@@ -432,10 +442,14 @@ void init_lens_sample(char *lensphotoz, char *galsample)
   printf("Lens Sample Redshift Errors set to %s: redshift.clustering_photoz=%d\n",lensphotoz,redshift.clustering_photoz);
   
   if (strcmp(survey.name,"LSST")==0 || strcmp(survey.name,"WFIRST")==0 || strcmp(survey.name,"HSC")==0 || strcmp(survey.name,"Euclid")==0 ){ 
-     if(strcmp(galsample,"source")==0){
+    if(strcmp(galsample,"source")==0){
       init_clphotoz_source();
       set_galaxies_source();
-     }
+    }
+    if(strcmp(galsample,"redmagic")==0){
+      init_clphotoz_redmagic();
+      set_galaxies_redmagic();
+    }
   }
   //call test_kmax once to initialize look-up tables at reference cosmology
   test_kmax(1000.,1);
@@ -508,19 +522,67 @@ void set_equal_tomo_bins()
   free_double_vector(sum,0,zbins);
 }
 
-void set_galaxies_source(void)
+void set_galaxies_redmagic()
 {
-  // Y1 with four lens redshift bins  - redmagic-high_dens for 0..2, redmagic-high_lum for 3
+
   int i,j,n;
-  tomo.clustering_Nbin        = tomo.shear_Nbin;
+  redshift.clustering_zdistrpar_zmin = 0.2;
+  redshift.clustering_zdistrpar_zmax = 1.0;
+  //redshift.clustering_histogram_zbins=75;
+  
+  survey.n_lens = 0.25; //guestimate of stage 4 lens sample with excellent photo-z
+  printf("Number density of lens galaxies=%le\n",survey.n_lens);
+
+  tomo.clustering_Nbin        = 4;
+  tomo.clustering_Npowerspectra = 4;
+  tomo.clustering_zmax[0]      = .4;
+  tomo.clustering_zmax[1]      = .6;
+  tomo.clustering_zmax[2]      = .8;
+  tomo.clustering_zmax[3]      = 1.;
+  
+  tomo.clustering_zmin[0]      = 0.2;
+  tomo.clustering_zmin[1]      = 0.4;
+  tomo.clustering_zmin[2]      = 0.6;
+  tomo.clustering_zmin[3]      = 0.8;
+  printf("\n");
+  printf("Lens Sample: LSST redmagic- Tomographic Bin limits:\n");
+  for (i =0; i < tomo.clustering_Nbin ; i++){
+    printf("min=%le max=%le\n",tomo.clustering_zmin[i],tomo.clustering_zmax[i]);
+  }
+  printf("\n");
+  printf("Setting Galaxy Bias - Passive Evolution in z-bins:\n");
+  for (i =0; i < tomo.clustering_Nbin ; i++){
+    gbias.b[i] = 1.35+0.15*i;
+    printf("Bin %d: galaxy bias=%le\n",i,gbias.b[i]);
+  }
+  n = 0;
+  for (i = 0; i < tomo.clustering_Nbin; i++){
+    for(j = 0; j<tomo.shear_Nbin;j++){
+      n += test_zoverlap(i,j);
+      printf("GGL combinations zl=%d zs=%d accept=%d\n",i,j,test_zoverlap(i,j));
+    }
+  }
+  tomo.ggl_Npowerspectra = n;
+  printf("%d GGL Powerspectra\n",tomo.ggl_Npowerspectra);
+  printf("redshift.clustering_histogram_zbins=%d\n",redshift.clustering_histogram_zbins); 
+  
+}
+
+
+
+void set_galaxies_source()
+{
+  //take out first lens bin   
+  int i,j,n;
+  tomo.clustering_Nbin        = tomo.shear_Nbin-1;
   tomo.clustering_Npowerspectra = tomo.clustering_Nbin;
   for (i = 0; i < tomo.clustering_Nbin; i++){
-    tomo.clustering_zmax[i]      = tomo.shear_zmax[i];
-    tomo.clustering_zmin[i]      = tomo.shear_zmin[i];
+    tomo.clustering_zmax[i]      = tomo.shear_zmax[i+1];
+    tomo.clustering_zmin[i]      = tomo.shear_zmin[i+1];
   }
-  tomo.clustering_zmin[0]=0.15; //multi-probe NG covs are very likely ill-conditioned if lenses at very low redshift is included 
+  //tomo.clustering_zmin[0]=0.15; //multi-probe NG covs are very likely ill-conditioned if lenses at very low redshift is included 
 
-  redshift.clustering_zdistrpar_zmin = redshift.shear_zdistrpar_zmin;
+  redshift.clustering_zdistrpar_zmin = tomo.clustering_zmin[0];
   redshift.clustering_zdistrpar_zmax = redshift.shear_zdistrpar_zmax;
 
   printf("\n");
@@ -582,12 +644,12 @@ void set_clusters_LSST(){
     }
   }
   
-  Cluster.N200_min = 20.;
+  Cluster.N200_min = 25.; //formerly 20
   Cluster.N200_max = 220.;
-  Cluster.N200_Nbin = 5;
+  Cluster.N200_Nbin = 4;
   strcpy(Cluster.model,"Murata_etal_2018");
   //upper bin boundaries - note that bin boundaries need to be integers!
-  int Nlist[5] = {30,45,70,120,Cluster.N200_max};
+  int Nlist[4] = {40,80,120,Cluster.N200_max}; //formerly 40,80,120,...
   Cluster.N_min[0] = Cluster.N200_min;
   Cluster.N_max[0] = Nlist[0];
   for (i = 1; i < Cluster.N200_Nbin; i++){
@@ -663,6 +725,19 @@ void init_clphotoz_source()
     printf("nuisance.bias_zphot_clustering[%d]=%le\n",i,nuisance.bias_zphot_clustering[i]);
     printf("nuisance.sigma_zphot_clustering[%d]=%le\n",i,nuisance.sigma_zphot_clustering[i]); 
   }
+}
+
+void init_clphotoz_redmagic()
+{
+  int i;
+  printf("\n");
+  printf("Galaxy sample redmagic photoz uncertainty initialized\n");
+  for (i=0;i<10; i++){
+    nuisance.bias_zphot_clustering[i]=0.0;
+    nuisance.sigma_zphot_clustering[i]=0.01; 
+    printf("nuisance.bias_zphot_clustering[%d]=%le\n",i,nuisance.bias_zphot_clustering[i]);
+    printf("nuisance.sigma_zphot_clustering[%d]=%le\n",i,nuisance.sigma_zphot_clustering[i]);
+  }  
 }
 
 void init_HOD_rm(){

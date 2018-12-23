@@ -8,19 +8,19 @@ import numpy as np
 
 
 
-infile =['/users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/cov/WFIRST_3x2pt_clusterN_clusterWL_4.500000e+01_2.000000e+03_continuous_z_Zmin1_clusteringcut']
+infile =['cov/cov_WFIRST_Ncl25_4clusterbins_nrichmin25_source_Dec17']
 data= ['datav/WFIRST_all_2pt_clusterN_clusterWL_fid']
 outname=['WFIRST']
 
 # the numbers below can be computed knowing the data vector settings, e.g. 10 tomographic source bins results in 55 shear-shear power spectra. Or they can be read off when running the covariance code, i.e. type 'compute_covariance_fourier 100000' and look for the output mentioning number of ggl bins accepted and/or number of cluster weka lensing bins accepted. The default numbers below most likely don't correspond to your binning choices.
-nggl = 45 	# number of ggl power spectra
-ngcl = 26 	# number of cluster-source galaxy power spectra
-nlens = 10 	# number of lens bins 
+nggl = 36 	# number of ggl power spectra
+ngcl = 26	# number of cluster-source galaxy power spectra
+nlens = 9 	# number of lens bins 
 nlenscl= 4 	# number of cluster redshift bins 
 nshear = 55 # number of shear tomographic power spectra
-ncl=15 		# number of ell-bins
-nclgcl=4	# number of cluster ell-bins
-nrich=5 	# number of richness bins
+ncl=25		# number of ell-bins
+nclgcl=5	# number of cluster ell-bins
+nrich=4 	# number of richness bins
 
 
 ndata = (nshear+nggl+nlens)*ncl+nlenscl*nrich+nrich*ngcl*nclgcl 
@@ -46,14 +46,14 @@ for k in range(0,1):
 	  	cov[int(covfile[i,0]),int(covfile[i,1])] = covfile[i,8]+covfile[i,9]
 	  	cov[int(covfile[i,1]),int(covfile[i,0])] = covfile[i,8]+covfile[i,9]
 		# cov[int(covfile[i,0]),int(covfile[i,1])] = covfile[i,8]
-	 #  	cov[int(covfile[i,1]),int(covfile[i,0])] = covfile[i,8]
+	 	# cov[int(covfile[i,1]),int(covfile[i,0])] = covfile[i,8]
 	 
-
+	
 	cor = np.zeros((ndata,ndata))
 	for i in range(0,ndata):
 	    for j in range(0,ndata):
-	       if (cov[i,i]*cov[j,j] >0):
-	         cor[i,j] = cov[i,j]/math.sqrt(cov[i,i]*cov[j,j])
+	    	if (cov[i,i]*cov[j,j] >0):
+	       		cor[i,j] = cov[i,j]/math.sqrt(cov[i,i]*cov[j,j])
 
 
 	a = np.sort(LA.eigvals(cor[:,:]))
@@ -152,6 +152,16 @@ for k in range(0,1):
 	f.close()
 
 	
+	
+
+	labels = (r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$',r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$',r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$',r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$',r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$')
+	ticks = np.zeros(6)
+	tickx = np.zeros(5)
+	ticks[1] = nshear*ncl
+	ticks[2] = (nshear+nggl)*ncl
+	ticks[3] = n2pt
+	ticks[4] = n2pt+ncluster
+	ticks[5] = ndata
 
 	cor = np.zeros((ndata,ndata))
 	for i in range(0,ndata):
@@ -159,9 +169,34 @@ for k in range(0,1):
 			if (cov[i,i]*cov[j,j] >0):
 				cor[i,j] = cov[i,j]/math.sqrt(cov[i,i]*cov[j,j])
 
-	plt.figure()
-	#plt.imshow(np.log10(cov[0:1500,2000:]), interpolation="nearest",vmin=-25, vmax=-10)
-	plt.imshow(np.log10(cov[:,:]), interpolation="nearest",vmin=-25, vmax=-10)
-	#plt.imshow(cor[n2ptcl:n2ptcl+200,300:nshear*ncl], interpolation="nearest",vmax=0.5)
-	plt.colorbar()
+	fs= 15
+	for i in range(0,4):
+  		tickx[i] = 0.5*(ticks[i]+ticks[i+1])
+  		plt.plot([ticks[i]-0.5,ticks[i]-0.5],[-.5,ndata-0.5],linestyle ='-',color = 'k')
+  		plt.plot([-.5,ndata-0.5],[ticks[i]-0.5,ticks[i]-0.5],linestyle ='-',color = 'k')
+
+	plt.subplot(1, 1, 1)
+	ax = plt.gca()
+	im = ax.imshow(cor[:,:], interpolation="nearest",origin='lower')
+	plt.xticks(tickx, labels,fontsize=fs)
+	plt.yticks(tickx-0.5, labels,fontsize=fs)
+	plt.tick_params(axis = 'x',length = 0, pad = 15)
+	plt.tick_params(axis = 'y',length = 0, pad = 5)
+
+	plt.colorbar(im)
 	plt.show()
+	
+	print ticks
+	
+	# plt.figure()
+	# #plt.imshow(np.log10(cov[0:1500,2000:]), interpolation="nearest",vmin=-25, vmax=-10)
+	# plt.imshow(np.log10(cov[:,:]), interpolation="nearest",vmin=-25, vmax=-10)
+	# #plt.imshow(cor[n2ptcl:n2ptcl+200,300:nshear*ncl], interpolation="nearest",vmax=0.5)
+	# plt.colorbar()
+	# plt.show()
+
+	
+
+
+
+

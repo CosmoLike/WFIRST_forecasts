@@ -12,16 +12,16 @@ cov_file = os.path.join("/home/teifler/CosmoLike/WFIRST_forecasts/", "cov/cov_3x
 chain_file = os.path.join(dirname, "./like/like_no_wfirst_planck15_BAO_w0wa_20000steps_512walkers")
 
 initcosmo()
-initbins(20,20.0,5000.0,5000.0,10.0,7,10)
+initbins(25,30.0,15000.0,5000.0,21.0,10)
 initsurvey("WFIRST")
-initgalaxies(file_source_z,file_lens_z,"gaussian","gaussian","redmagic")
+initgalaxies(file_source_z,file_lens_z,"gaussian","gaussian","source")
 initclusters()
 initia("none","DEEP2")
-initpriors("none","none","none","Planck15_BAO_w0wa") 
+initpriors("none","none","none","none") 
 # test also with
 #initpriors("none","none","none","Planck")
 #initpriors("none","none","none","random")
-initprobes("shear_shear")
+initprobes("all_2pt_clusterN_clusterWL")
 initdatainv(cov_file ,data_file)
 
 sample_params= sample_cosmology_only()

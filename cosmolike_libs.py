@@ -1,7 +1,9 @@
+import sys
 import emcee
 import ctypes
 import os
 import numpy as np
+from schwimmbad import MPIPool
 
 # from mpp_blinding import blind_parameters
 # from mpp_blinding import seed as blinding_seed
@@ -462,20 +464,42 @@ def sample_main(varied_parameters, iterations, nwalker, nthreads, filename, blin
     print "ndim = ", ndim
     print "start = ", starting_point
     print "std = ", std
-    sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood,threads=nthreads)
+
+
+    #starting mpi routines
+    with MPIPool() as pool:
+        if not pool.is_master():
+            pool.wait()
+            sys.exit(0)
+
+
+#    sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood,threads=nthreads)
+
+    sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood, pool=pool)
     f = open(filename, 'w')
 
     #write header here
-    f.write('# ' + '    '.join(varied_parameters)+"\n")
+    f.write('# ' + '    '.join(varied_parameters)+" log_like\n")
     f.write('#blind=%s\n'%blind)
     if blind:
         f.write('#blinding_seed=%d\n'%blinding_seed)
 
-
     for (p, loglike, state) in sampler.sample(p0,iterations=iterations):
-        for row in p:
+        for row,logl in zip(p,loglike):
             if blind:
                 row = blind_parameters(varied_parameters, row)
-            f.write('%s\n' % ('  '.join([str(r) for r in row])))
+            p_text = '  '.join(str(r) for r in row)
+            f.write('%s %e\n' % (p_text,logl))
+        f.flush()
     f.close()
+    
+    # for (p, loglike, state) in sampler.sample(p0,iterations=iterations):
+    #     for row in p:
+    #         if blind:
+    #             row = blind_parameters(varied_parameters, row)
+    #         p_text = '  '.join(str(r) for r in row)
+    #         print ('%s %e\n' % (p_text,loglike))
+    #         f.write('%s %e\n' % (p_text,loglike))
+    #     f.flush()
+    # f.close()
 
