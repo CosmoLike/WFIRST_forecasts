@@ -7,15 +7,16 @@ from numpy import linalg as LA
 import numpy as np
 
 
+infile =['/users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/cov/cov_WFIRST_SNclustering10']
 
-infile =['cov/cov_WFIRST_Ncl25_4clusterbins_nrichmin25_source_Dec17']
+#infile =['/users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/cov/cov_WFIRST_Ncl25_4clusterbins_nrichmin25_source_Dec17']
 data= ['datav/WFIRST_all_2pt_clusterN_clusterWL_fid']
-outname=['WFIRST']
+outname=['WFIRST_SN10']
 
 # the numbers below can be computed knowing the data vector settings, e.g. 10 tomographic source bins results in 55 shear-shear power spectra. Or they can be read off when running the covariance code, i.e. type 'compute_covariance_fourier 100000' and look for the output mentioning number of ggl bins accepted and/or number of cluster weka lensing bins accepted. The default numbers below most likely don't correspond to your binning choices.
-nggl = 36 	# number of ggl power spectra
-ngcl = 26	# number of cluster-source galaxy power spectra
-nlens = 9 	# number of lens bins 
+nggl = 32 	# number of ggl power spectra
+ngcl = 22	# number of cluster-source galaxy power spectra
+nlens = 10 	# number of lens bins 
 nlenscl= 4 	# number of cluster redshift bins 
 nshear = 55 # number of shear tomographic power spectra
 ncl=25		# number of ell-bins
@@ -23,7 +24,7 @@ nclgcl=5	# number of cluster ell-bins
 nrich=4 	# number of richness bins
 
 
-ndata = (nshear+nggl+nlens)*ncl+nlenscl*nrich+nrich*ngcl*nclgcl 
+ndata = (nshear+nggl+nlens)*ncl+nlenscl*nrich+nrich*ngcl*nclgcl
 n2pt = (nshear+nggl+nlens)*ncl 
 ncluster = nlenscl*nrich 
 n2ptcl=n2pt+ncluster
@@ -169,15 +170,15 @@ for k in range(0,1):
 			if (cov[i,i]*cov[j,j] >0):
 				cor[i,j] = cov[i,j]/math.sqrt(cov[i,i]*cov[j,j])
 
-	fs= 15
-	for i in range(0,4):
+	fs= 10
+	for i in range(0,5):
   		tickx[i] = 0.5*(ticks[i]+ticks[i+1])
   		plt.plot([ticks[i]-0.5,ticks[i]-0.5],[-.5,ndata-0.5],linestyle ='-',color = 'k')
   		plt.plot([-.5,ndata-0.5],[ticks[i]-0.5,ticks[i]-0.5],linestyle ='-',color = 'k')
 
 	plt.subplot(1, 1, 1)
 	ax = plt.gca()
-	im = ax.imshow(cor[:,:], interpolation="nearest",origin='lower')
+	im = ax.imshow(np.log10(cov[:,:]), interpolation="nearest",vmin=-25, vmax=-10)
 	plt.xticks(tickx, labels,fontsize=fs)
 	plt.yticks(tickx-0.5, labels,fontsize=fs)
 	plt.tick_params(axis = 'x',length = 0, pad = 15)

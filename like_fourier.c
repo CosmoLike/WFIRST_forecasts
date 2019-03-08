@@ -39,7 +39,6 @@
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
 #include "init_WFIRST_forecasts.c"
-#include "like_grs.c"
 
 double C_shear_tomo_sys(double ell,int z1,int z2);
 double C_cgl_tomo_sys(double ell_Cluster,int zl,int nN, int zs);
@@ -342,7 +341,7 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
   static double *ell;
   static double *ell_Cluster;
   static double darg;
-  double chisqr,a,log_L_prior=0.0, log_L_GRS=0.0;
+  double chisqr,a,log_L_prior=0.0;
   
   if(ell==0){
     pred= create_double_vector(0, like.Ndata-1);
@@ -392,18 +391,18 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
   log_L_prior=0.0;
   // if(like.Aubourg_Planck_BAO_SN==1) log_L_prior+=log_L_Planck_BAO_SN();
   // if(like.SN==1) log_L_prior+=log_L_SN();
-  // if(like.BAO==1) log_L_prior+=log_L_BAO();
+  if(like.BAO==1) log_L_prior+=log_L_BAO();
   // if(like.Planck==1) log_L_prior+=log_L_Planck();
   // if(like.Planck15_BAO_w0wa==1) log_L_prior+=log_L_Planck15_BAO_w0wa();//CH
-  // if(like.Planck15_BAO_H070p6_JLA_w0wa==1) log_L_prior+=log_L_Planck15_BAO_H070p6_JLA_w0wa();//CH
+  if(like.Planck15_BAO_H070p6_JLA_w0wa==1) log_L_prior+=log_L_Planck15_BAO_H070p6_JLA_w0wa();//CH
   // if(like.IA!=0) log_L_prior+=log_L_ia();
   // if(like.IA!=0) log_L_prior+=log_like_f_red();
-  // if(like.wlphotoz!=0) log_L_prior+=log_L_wlphotoz();
-  // if(like.clphotoz!=0) log_L_prior+=log_L_clphotoz();
-  // if(like.shearcalib==1) log_L_prior+=log_L_shear_calib();
+  if(like.wlphotoz!=0) log_L_prior+=log_L_wlphotoz();
+  if(like.clphotoz!=0) log_L_prior+=log_L_clphotoz();
+  if(like.shearcalib==1) log_L_prior+=log_L_shear_calib();
   // if(like.clusterMobs==1) log_L_prior+=log_L_clusterMobs();
  
-  // printf("%d %d %d %d\n",like.BAO,like.wlphotoz,like.clphotoz,like.shearcalib);
+  //printf("%d %d %d %d\n",like.BAO,like.wlphotoz,like.clphotoz,like.shearcalib);
   // printf("logl %le %le %le %le\n",log_L_shear_calib(),log_L_wlphotoz(),log_L_clphotoz(),log_L_clusterMobs());
   int start=0;  
   
@@ -440,11 +439,13 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
     printf("error: chisqr = %le\n",chisqr);
     //exit(EXIT_FAILURE);
   }
-  if (like.GRS == 1){
-    log_L_GRS = log_like_GRS(cosmology.Omega_m, cosmology.sigma_8, cosmology.n_spec, cosmology.w0,cosmology.wa, cosmology.omb, cosmology.h0,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.);
-  }
-  printf("%le\n",chisqr);
-  return -0.5*chisqr+log_L_prior+log_L_GRS;
+  // if (like.GRS == 1){
+  //   printf("like_grs activated!\n");
+  //   log_L_GRS = log_like_GRS(cosmology.Omega_m, cosmology.sigma_8, cosmology.n_spec, cosmology.w0,cosmology.wa, cosmology.omb, cosmology.h0,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.);
+  // }
+//  printf("%le\n",chisqr);
+//  return -0.5*chisqr+log_L_prior+log_L_GRS;
+  return -0.5*chisqr+log_L_prior;
 }
 
 void compute_data_vector(char *details, double OMM, double S8, double NS, double W0,double WA, double OMB, double H0, double MGSigma, double MGmu, double B1, double B2, double B3, double B4,double B5, double B6, double B7, double B8, double B9, double B10, double SP1, double SP2, double SP3, double SP4, double SP5,double SP6, double SP7, double SP8, double SP9, double SP10, double SPS1, double CP1, double CP2, double CP3, double CP4, double CP5, double CP6, double CP7, double CP8, double CP9, double CP10, double CPS1, double M1, double M2, double M3, double M4, double M5, double M6, double M7, double M8, double M9, double M10, double A_ia, double beta_ia, double eta_ia, double eta_ia_highz, double LF_alpha, double LF_P, double LF_Q, double LF_red_alpha, double LF_red_P, double LF_red_Q, double mass_obs_norm, double mass_obs_slope, double mass_z_slope, double mass_obs_scatter_norm, double mass_obs_scatter_mass_slope, double mass_obs_scatter_z_slope)
@@ -577,14 +578,14 @@ void save_zdistr_sources(int zs){
 
 
 void save_zdistr_lenses(int zl){
-   double z,dz =(redshift.shear_zdistrpar_zmax-redshift.shear_zdistrpar_zmin)/300.0;
+   double z,dz =(redshift.clustering_zdistrpar_zmax-redshift.clustering_zdistrpar_zmin)/300.0;
   printf("Printing redshift distribution n(z) and bias b(z) for lens redshift bin %d\n",zl);
    
    FILE *F1;
    char filename[300];
    sprintf(filename,"zdistris/zdist_lenses_bin%d.txt", zl);
    F1 = fopen(filename,"w");
-   for (z =redshift.shear_zdistrpar_zmin; z< redshift.shear_zdistrpar_zmax; z+= dz){
+   for (z =redshift.clustering_zdistrpar_zmin; z< redshift.clustering_zdistrpar_zmax; z+= dz){
       fprintf(F1,"%e %e\n", z, pf_photoz(z,zl));
    }
 }
@@ -597,22 +598,25 @@ void save_zdistr_lenses(int zl){
   int i;
 /* here, do your time-consuming job */
 
-  init_cosmo();
-  init_binning_fourier(25,30.0,15000.0,4000.0,21.0,10);
+  init_cosmo_runmode("halofit");
+  init_binning_fourier(25,30.0,15000.0,4000.0,21.0,10,10);
+  init_priors("photo_opti","shear_opti","none","none");
   init_survey("WFIRST");
-  //init_galaxies("zdistris/zdistri_WFIRST_LSST_lensing_fine_bin","zdistris/zdistri_WFIRST_LSST_lensing_fine_bin", "gaussian", "gaussian", "source");
-  init_galaxies("zdistris/zdistri_WFIRST_LSST_lensing","zdistris/zdistri_WFIRST_LSST_clustering", "gaussian", "gaussian", "source");
+  init_galaxies("zdistris/zdistri_WFIRST_LSST_lensing_fine_bin","zdistris/zdistri_WFIRST_LSST_clustering_fine_bin", "gaussian", "gaussian", "SN10");
+//  init_galaxies("zdistris/zdistribution_DESY1_source","zdistris/zdistribution_DESY1_lens", "none", "none", "DES_Y1");
   init_clusters();
   init_IA("none", "none");
   //init_priors("none","none","PhotoBAO","none");
-  init_priors("none","none","none","none"); //CH: for running with Planck15_BAO_w0wa prior
-  init_probes("all_2pt_clusterN_clusterWL");
-  // init_probes("all_2pt");
+   
+  //init_probes("clusterWL");
+  init_probes("all_2pt");
   //init_Pdelta("emu",0.8,0.35);
   // init_Pdelta("linear",0.8,0.35);
 
   // for (i =0; i< 10; i++){
   //   save_zdistr_sources(i);
+  // }
+  // for (i =0; i< 10; i++){
   //   save_zdistr_lenses(i);
   // }
 //   double Omega;
@@ -622,7 +626,7 @@ void save_zdistr_lenses(int zl){
 //   sprintf(filename,"test_fid_%d", i);
 //compute_data_vector(filename,Omega,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
 // }
-compute_data_vector("fid",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
+compute_data_vector("fid_opti",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
 // compute_data_vector("mu1_Sigma0",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,1.,1.35,1.5,1.65,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9);
   // compute_data_vector("mu1_Sigma1",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,1.,1.,1.35,1.5,1.65,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9);
 
@@ -630,7 +634,7 @@ compute_data_vector("fid",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,
   
 
   // begin = clock();
-  // log_multi_like(3.25828785e-01,8.22059524e-01,9.79098041e-01,-1.00298984e+00,9.57288008e-04,5.10832295e-02,6.74169596e-01,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
+  // log_multi_like(0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
   // // printf("knonlin %le\n",nonlinear_scale_computation(1.0));
   // // printf("knonlin %le\n",nonlinear_scale_computation(0.5));
   // end = clock();

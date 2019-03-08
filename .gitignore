@@ -8,3 +8,13 @@ compute_covariances_fourier\.dSYM/
 compute_covariances_fourier
 
 like_fourier
+
+cov/
+
+like/
+
+\.ipynb_checkpoints/
+
+external/
+
+plots/

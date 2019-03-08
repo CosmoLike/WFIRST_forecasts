@@ -18,7 +18,7 @@ Ns = 10
 ###########################################################
 # full dn/dz
 
-path = "zdistris/zdistribution_WFIRST_LSST"
+path = "zdistris/zdistri_WFIRST_LSST_lensing"
 data = np.genfromtxt(path)
 zmin = data[:,0]
 z = data[:,1]
@@ -30,24 +30,24 @@ nz = data[:,3]
 fig=plt.figure(1)
 ax=fig.add_subplot(111)
 
-ax.plot(z, nz*300/4*45.0, 'blue', lw=2, label=r'1 tomo bin, true redshift distribution')
+ax.plot(z, nz*300/4*45.0, 'blue', lw=2, label=r'1 tomo bin, true redshift distribution, lensing')
 
 # ###########################################################
 # ###########################################################
-# # full dn/dz no ifc
+# full dn/dz no ifc
 
-# path2 = "zdistris/zdistribution_WFIRST_nonifc_0"
-# data2 = np.genfromtxt(path2)
-# zmin2 = data2[:,0]
-# z2 = data2[:,1]
-# zmax2 = data2[:,2]
-# nz2 = data2[:,3]
+path2 = "zdistris/zdistri_WFIRST_LSST_clustering"
+data2 = np.genfromtxt(path2)
+zmin2 = data2[:,0]
+z2 = data2[:,1]
+zmax2 = data2[:,2]
+nz2 = data2[:,3]
 
-# ax.plot(z2, nz2*35.43, 'red', lw=2, label=r'1 tomo bin, true redshift, no IFC')
+ax.plot(z2, nz2*35.43, 'red', lw=2, label=r'1 tomo bin, true redshift distribution, clustering')
 # ###########################################################
 # # source bins
 
-path = "zdistris/zdist_sources_bin"
+path = "zdistris/zdist_lenses_bin"
 
 for iS in range(Ns):
    data = np.genfromtxt(path+str(iS)+".txt")
@@ -57,7 +57,7 @@ for iS in range(Ns):
    #print "normalized to", np.trapz(nz,z)
    
    ax.fill_between(z, 0., nz*4.5, facecolor=plt.cm.winter(1.*iS/Ns), edgecolor='', alpha=0.8)
-ax.plot([], [], color=plt.cm.winter(0.), lw=2, alpha=0.7, label=r'10 tomo bins, Gaussian photo-z')
+ax.plot([], [], color=plt.cm.winter(0.), lw=2, alpha=0.7, label=r'10 tomo bins, Gaussian photo-z, clustering')
 
 # ###########################################################
 
@@ -75,17 +75,17 @@ ax.plot([], [], color=plt.cm.winter(0.), lw=2, alpha=0.7, label=r'10 tomo bins, 
 # ax.plot([], [], color=plt.cm.autumn(0.), lw=2, alpha=0.7, label=r'lenses$\times$10')
 
 
-# # lens bins
-# path2 = "zdistris/zdist_sources_noifc_bin"
-# for ig in range(Ng):
-#    data = np.genfromtxt(path2+str(ig)+".txt")
-#    z = data[:,0]
-#    #nz_norm = data[:,1]
-#    nz = data[:,1]
-#    #print "normalized to", np.trapz(nz,z)
+# lens bins
+path2 = "zdistris/zdist_sources_bin"
+for ig in range(Ng):
+   data = np.genfromtxt(path2+str(ig)+".txt")
+   z = data[:,0]
+   #nz_norm = data[:,1]
+   nz = data[:,1]
+   #print "normalized to", np.trapz(nz,z)
 
-#    ax.fill_between(z, 0., nz*3.543, facecolor=plt.cm.autumn(1.*ig/Ng), edgecolor='', alpha=0.7)
-# ax.plot([], [], color=plt.cm.autumn(0.), lw=2, alpha=0.7, label=r'10 tomo bins, Gaussian photo-z, without IFC')
+   ax.fill_between(z, 0., nz*3.543, facecolor=plt.cm.autumn(1.*ig/Ng), edgecolor='', alpha=0.7)
+ax.plot([], [], color=plt.cm.autumn(0.), lw=2, alpha=0.7, label=r'10 tomo bins, Gaussian photo-z, lensing')
 
 # ###########################################################
 # # lensing efficiency
@@ -108,5 +108,5 @@ ax.legend(loc=1)
 ax.set_xlabel(r'$z$', fontsize=24)
 ax.set_ylabel(r'$\frac{dN}{d\Omega \, dz}$ [arcmin$^{-2}$]', fontsize=22)
 
-fig.savefig(pathOut+"zbins_LSST.pdf", bbox_inches='tight')
+fig.savefig(pathOut+"zbins_WFIRST.pdf", bbox_inches='tight')
 

@@ -8,7 +8,10 @@
 #include <time.h>
 #include <string.h>
 
+#include <fftw3.h>
+
 #include <gsl/gsl_errno.h>
+#include <gsl/gsl_sf_erf.h>
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_sf_gamma.h>
@@ -19,17 +22,23 @@
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_sf_expint.h>
 #include <gsl/gsl_deriv.h>
-/*
-#include "../../theory/basics.c"
-#include "../../theory/structs.c"
-#include "../../theory/parameters.c"
-#include "../../emu13/emu.c"
-#include "../../theory/recompute.c"
-#include "../../theory/cosmo3D.c"
-#include "../../theory/redshift.c"
-#include "../../theory/halo.c"
-#include "../../theory/HOD.c"*/
-#include "../cosmolike_core/theory/GRS.c"
+
+// #include "../cosmolike_core/theory/basics.c"
+// #include "../cosmolike_core/theory/structs.c"
+// #include "../cosmolike_core/theory/parameters.c"
+// #include "../cosmolike_core/emu17/P_cb/emu.c"
+// #include "../cosmolike_core/theory/recompute.c"
+// #include "../cosmolike_core/theory/cosmo3D.c"
+// #include "../cosmolike_core/theory/redshift_spline.c"
+// #include "../cosmolike_core/theory/halo.c"
+// #include "../cosmolike_core/theory/HOD.c"
+// #include "../cosmolike_core/theory/cosmo2D_fourier.c"
+// #include "../cosmolike_core/theory/IA.c"
+// #include "../cosmolike_core/theory/cluster.c"
+// #include "../cosmolike_core/theory/BAO.c"
+// #include "../cosmolike_core/theory/external_prior.c"
+// #include "../cosmolike_core/theory/GRS.c"
+
 void init_GRS(int n_trade);
 
 double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, double OMB, double H0, 

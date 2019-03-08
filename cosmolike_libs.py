@@ -3,7 +3,7 @@ import emcee
 import ctypes
 import os
 import numpy as np
-from schwimmbad import MPIPool
+import mpi4py
 
 # from mpp_blinding import blind_parameters
 # from mpp_blinding import seed as blinding_seed
@@ -15,11 +15,11 @@ double = ctypes.c_double
 
 Double10 = double*10
 
-initcosmo=lib.init_cosmo
-initcosmo.argtypes=[]
+initcosmo=lib.init_cosmo_runmode
+initcosmo.argtypes=[ctypes.c_char_p]
 
 initbins=lib.init_binning_fourier
-initbins.argtypes=[ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int]
+initbins.argtypes=[ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_int]
 
 initsurvey=lib.init_survey
 initsurvey.argtypes=[ctypes.c_char_p]
@@ -246,14 +246,14 @@ class InputNuisanceParams(IterableStruct):
         c.source_z_bias[:] = np.repeat(0.0, 10)
         c.source_z_s = 0.05
         c.lens_z_bias[:] = np.repeat(0.0, 10)
-        c.lens_z_s = 0.03
+        c.lens_z_s = 0.05
         c.shear_m[:] = np.repeat(0.0, 10)
         c.A_ia = 5.92
         c.beta_ia = 1.1
         c.eta_ia = -0.47
         c.eta_ia_highz = 0.0
         c.lf[:] = np.repeat(0.0, 6)
-        c.m_lambda[:] = [3.207, 0.993, 0.0, 0.456, -0.169, 0.0]
+        c.m_lambda[:] = [3.207, 0.993, 0.0, 0.456, 0.0, 0.0]
         return c
 
     @classmethod
@@ -261,10 +261,10 @@ class InputNuisanceParams(IterableStruct):
         c = cls()
         c.bias[:] = np.repeat(0.1, 10)
         c.source_z_bias[:] = np.repeat(0.001, 10)
-        c.source_z_s = 0.001
+        c.source_z_s = 0.005
         c.lens_z_bias[:] = np.repeat(0.0005, 10)
-        c.lens_z_s = 0.0005
-        c.shear_m[:] = np.repeat(0.0001, 10)
+        c.lens_z_s = 0.005
+        c.shear_m[:] = np.repeat(0.005, 10)
         c.A_ia = 0.05
         c.beta_ia = 0.01
         c.eta_ia = 0.01
@@ -322,6 +322,28 @@ def sample_cosmology_only_SN_SL(MG = False):
 
     return varied_parameters
 
+def sample_LCDM_only(MG = False):
+    if MG:
+        varied_parameters = InputCosmologyParams().names()
+    else:
+        varied_parameters = ['omega_m']
+        varied_parameters.append('sigma_8')
+        varied_parameters.append('n_s')
+        varied_parameters.append('omega_b')
+        varied_parameters.append('h0')
+
+    return varied_parameters
+
+def sample_LCDM_2pt_nuisance(tomo_N_shear,tomo_N_lens,MG = False):
+    varied_parameters = sample_LCDM_only(MG)
+    varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
+    varied_parameters += ['source_z_bias_%d'%i for i in xrange(tomo_N_shear)]
+    varied_parameters += ['lens_z_bias_%d'%i for i in xrange(tomo_N_lens)]
+    varied_parameters += ['bias_%d'%i for i in xrange(tomo_N_lens)]
+    varied_parameters.append('source_z_s')
+    varied_parameters.append('lens_z_s')
+    return varied_parameters
+
 
 def sample_cosmology_only(MG = False):
     if MG:
@@ -347,6 +369,21 @@ def sample_cosmology_shear_nuisance(tomo_N_shear,MG = False):
 def sample_cosmology_2pt_nuisance(tomo_N_shear,tomo_N_lens,MG = False):
     varied_parameters = sample_cosmology_only(MG)
     varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
+    varied_parameters += ['source_z_bias_%d'%i for i in xrange(tomo_N_shear)]
+    varied_parameters += ['lens_z_bias_%d'%i for i in xrange(tomo_N_lens)]
+    varied_parameters += ['bias_%d'%i for i in xrange(tomo_N_lens)]
+    varied_parameters.append('source_z_s')
+    varied_parameters.append('lens_z_s')
+    return varied_parameters
+
+def sample_cosmology_2pt_shear_nuisance(tomo_N_shear,tomo_N_lens,MG = False):
+    varied_parameters = sample_cosmology_only(MG)
+    varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
+    varied_parameters += ['bias_%d'%i for i in xrange(tomo_N_lens)]
+    return varied_parameters
+
+def sample_cosmology_2pt_photo_nuisance(tomo_N_shear,tomo_N_lens,MG = False):
+    varied_parameters = sample_cosmology_only(MG)
     varied_parameters += ['source_z_bias_%d'%i for i in xrange(tomo_N_shear)]
     varied_parameters += ['lens_z_bias_%d'%i for i in xrange(tomo_N_lens)]
     varied_parameters += ['bias_%d'%i for i in xrange(tomo_N_lens)]
@@ -448,7 +485,7 @@ def sample_cosmology_2pt_cluster_SRD(tomo_N_shear,tomo_N_lens,MG = False):
 
 
 
-def sample_main(varied_parameters, iterations, nwalker, nthreads, filename, blind=False):
+def sample_main(varied_parameters, iterations, nwalker, nthreads, filename, blind=False, pool=None):
     print varied_parameters
 
     likelihood = LikelihoodFunctionWrapper(varied_parameters)
@@ -466,16 +503,16 @@ def sample_main(varied_parameters, iterations, nwalker, nthreads, filename, blin
     print "std = ", std
 
 
-    #starting mpi routines
-    with MPIPool() as pool:
-        if not pool.is_master():
-            pool.wait()
-            sys.exit(0)
+    # if pool is not None:
+    #     if not pool.is_master():
+    #         pool.wait()
+    #         sys.exit(0)
 
 
-#    sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood,threads=nthreads)
+    sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood,threads=nthreads,pool=pool)
 
-    sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood, pool=pool)
+#    sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood, pool=pool)
+
     f = open(filename, 'w')
 
     #write header here
@@ -493,6 +530,7 @@ def sample_main(varied_parameters, iterations, nwalker, nthreads, filename, blin
         f.flush()
     f.close()
     
+
     # for (p, loglike, state) in sampler.sample(p0,iterations=iterations):
     #     for row in p:
     #         if blind:

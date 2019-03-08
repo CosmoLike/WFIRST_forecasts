@@ -455,6 +455,7 @@ void run_cov_clustering(char *OUTFILE, char *PATH, double *ell, double *dell, in
       c_ng = 0.; c_g = 0.;
       if (z1 == z3){
         weight = test_kmax(ell[nl1],z1)*test_kmax(ell[nl2],z3);
+        printf("ell[nl1]=%le ell[nl2]=%le test_kmax %d %d\n",ell[nl1],ell[nl2],test_kmax(ell[nl1],z1),test_kmax(ell[nl2],z3));
         if (weight) {
           c_ng = cov_NG_cl_cl_tomo(ell[nl1],ell[nl2],z1,z2,z3,z4);
         }
@@ -540,9 +541,16 @@ int main(int argc, char** argv)
   int N_scenarios=1;
   //static double scenario_table[15][2]={{1500.0,45.0},{2000.0,45.0},{2500.0,45.0},{3000.0,45.0},{3500.0,45.0},{4000.0,45.0},{10000.0,45.0},{18000.0,45.0},{2000.0,33.0},{2000.0,36.0},{2000.0,39.0},{2000.0,42.0},{2000.0,48.0},{2000.0,51.0},{2000.0,54.0}};
   // when using SNR=5 clustering sample
-  // double scenario_table[1][3]={{2000.0,51.0,107.0}};
+  //double scenario_table[1][3]={{2000.0,51.0,107.0}};
+  
+  // when using SNR=10 clustering sample
+  //double scenario_table[1][3]={{2000.0,51.0,66.0}};
 
-  double scenario_table[1][3]={{2000.0,51.0,0.25}};
+//  when using SNR=10 clustering sample LSST area and f_LSST of 73% in the clustering SN>5 sample, 79% 
+  double scenario_table[1][3]={{18000.0,48.,52.}};
+
+//double scenario_table[1][3]={{1321.0,7.0,.15}};
+  //double scenario_table[1][3]={{2000.0,51.0,0.25}};
   int hit=atoi(argv[1]);
   
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -554,10 +562,13 @@ int main(int argc, char** argv)
   Ntable.N_a=20;
 
   //RUN MODE setup
-  init_cosmo();
-  init_binning_fourier(25,30.0,15000.0,4000.0,21.0,10);
+  init_cosmo_runmode("emu");
+  //init_cosmo_runmode("halofit");
+  init_binning_fourier(25,30.0,15000.0,4000.0,21.0,10,10);
+  init_priors("photo_opti","shear_opti","none","none");
   init_survey("WFIRST");
-  init_galaxies("zdistris/zdistri_WFIRST_LSST_lensing","zdistris/zdistri_WFIRST_LSST_clustering", "none", "none", "source");
+  //init_galaxies("zdistris/zdistribution_DESY1_source","zdistris/zdistribution_DESY1_lens", "none", "none", "DES_Y1");
+  init_galaxies("zdistris/zdistri_WFIRST_LSST_lensing_fine_bin","zdistris/zdistri_WFIRST_LSST_clustering_fine_bin", "none", "none", "SN10");
   init_clusters();
   init_IA("none", "GAMA");
   
@@ -592,8 +603,8 @@ int main(int argc, char** argv)
     
     printf("area: %le n_source: %le n_lens: %le\n",survey.area,survey.n_gal,survey.n_lens);
 
-    sprintf(covparams.outdir,"/home/u17/timeifler/covparallel/"); 
-
+    //sprintf(covparams.outdir,"/home/u17/timeifler/covparallel/"); 
+    sprintf(covparams.outdir,"/aurora_nobackup/cosmos/teifler/covparallel/");
     printf("----------------------------------\n");  
     sprintf(OUTFILE,"%s_%le_%le_ssss_cov_Ncl%d_Ntomo%d",survey.name,survey.n_gal,survey.area,like.Ncl,tomo.shear_Nbin);
     for (l=0;l<tomo.shear_Npowerspectra; l++){
@@ -635,7 +646,6 @@ int main(int argc, char** argv)
           }
         }
         k=k+1;
-        //printf("%d %d %d\n",l,m,k);
       }
     }
     sprintf(OUTFILE,"%s_llss_cov_Ncl%d_Ntomo%d",survey.name,like.Ncl,tomo.shear_Nbin);

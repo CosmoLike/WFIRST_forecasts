@@ -1,51 +1,191 @@
 import numpy as np
 from chainconsumer import ChainConsumer
 
+def DES_WFIRST_single_plot(filename, out, chainnames, paranames):
+	d1 = np.genfromtxt(filename[0])
+	d2 = np.genfromtxt(filename[1])
+	d3 = np.genfromtxt(filename[2])
+
+	d2[:,0]=d2[:,0]-0.0486
+	d3[:,0]=d3[:,0]-0.0486
+	d2[:,1]=d2[:,1]
+	d3[:,1]=d3[:,1]
+	
+	Abbott = d1[:,(0,26)]
+	DES = d2[:,(0,1)]
+	WFIRST = d3[:,(0,1)]
+	
+	Abbott[:,1]=Abbott[:,1]*(Abbott[:,0]/0.3)**0.5
+	Abbott_weights=d1[:,28]
+
+	DES[:,1]=((DES[:,1])*(DES[:,0]/0.3)**0.5)-0.0109
+	WFIRST[:,1]=((WFIRST[:,1])*(WFIRST[:,0]/0.3)**0.5)-0.0109
+	
+	c = ChainConsumer()
+	c.add_chain(Abbott[:,(0,1)],weights=Abbott_weights,parameters=paranames,name =chainnames[0])
+	c.add_chain(DES[20000:,(0,1)], name =chainnames[1])
+	c.add_chain(WFIRST[20000:,(0,1)], name =chainnames[2])	
+	c.configure(shade=True, kde=1.5, shade_alpha=0.2, colors=["g", "r","b"], linewidths=1.2, bar_shade=True)
+	#c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
+	fig = c.plotter.plot(truth=[0.267,0.773],figsize=2.0,filename="/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
+
+def DES_WFIRST_Planck_single_plot(filename, out, chainnames, paranames):
+	d1 = np.genfromtxt(filename[0])
+	d2 = np.genfromtxt(filename[1])
+	d3 = np.genfromtxt(filename[2])
+	d4 = np.genfromtxt(filename[3])
+
+	d2[:,0]=d2[:,0]-0.0486
+	d3[:,0]=d3[:,0]-0.0486
+	d2[:,1]=d2[:,1]
+	d3[:,1]=d3[:,1]
+	
+	Abbott = d1[:,(0,26)]
+	DES = d2[:,(0,1)]
+	WFIRST = d3[:,(0,1)]
+	Planck = d4[:,(0,8)]
+	
+	Abbott[:,1]=Abbott[:,1]*(Abbott[:,0]/0.3)**0.5
+	Abbott_weights=d1[:,28]
+
+	Planck[:,1]=Planck[:,1]*(Planck[:,0]/0.3)**0.5
+	Planck_weights=d4[:,10]
+
+	DES[:,1]=((DES[:,1])*(DES[:,0]/0.3)**0.5)-0.0109
+	WFIRST[:,1]=((WFIRST[:,1])*(WFIRST[:,0]/0.3)**0.5)-0.0109
+	
+	c = ChainConsumer()
+	c.add_chain(Abbott[:,(0,1)],weights=Abbott_weights,parameters=paranames,name =chainnames[0])
+	c.add_chain(Planck[:,(0,1)],weights=Planck_weights, name =chainnames[3])
+	c.add_chain(DES[20000:,(0,1)], name =chainnames[1])
+	c.add_chain(WFIRST[20000:,(0,1)], name =chainnames[2])
+		
+	c.configure(shade=True, kde=1.5, shade_alpha=0.2, colors=["g","o","r","b"], linewidths=1.2, bar_shade=True)
+	#c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
+	fig = c.plotter.plot(extents=[[0.2, 0.48], [0.7, 0.98]],figsize=2.0,filename="/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
+
+
+
 def twochain_single_plot(filename, out, chainnames, paranames):
 	d1 = np.genfromtxt(filename[0])
 	d2 = np.genfromtxt(filename[1])
 	c = ChainConsumer()
+	c.add_chain(d1[:,(0,1)], parameters=paranames, name =chainnames[0])
+	c.add_chain(d2[:,(0,1)], name =chainnames[1])
+	c.configure(shade=True,kde=2.0,shade_alpha=0.2, bar_shade=True)
+	#c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
+	fig = c.plotter.plot(figsize=2.0,filename="/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
+	
+def threechain_single_plot(filename, out, chainnames, paranames):
+	d1 = np.genfromtxt(filename[0])
+	d2 = np.genfromtxt(filename[1])
+	d3 = np.genfromtxt(filename[2])
+	zpivot=0.0
+	d1[:,3]= d1[:,3]+(zpivot/(1+zpivot))*d1[:,4]
+	d2[:,3]= d2[:,3]+(zpivot/(1+zpivot))*d2[:,4]
+	d3[:,3]= d3[:,3]+(zpivot/(1+zpivot))*d3[:,4]
+
+	c = ChainConsumer()
 	c.add_chain(d1[20000:,(3,4)], parameters=paranames, name =chainnames[0])
 	c.add_chain(d2[20000:,(3,4)], name =chainnames[1])
-	c.configure(shade=True, shade_alpha=0.2, bar_shade=True)
+	c.add_chain(d3[20000:,(3,4)], name =chainnames[2])
+
+	c.configure(shade=True,kde=2.0,shade_alpha=0.2, bar_shade=True)
 	#c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
-	fig = c.plotter.plot(figsize=2.0,filename="/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
-	
+	fig = c.plotter.plot(figsize=2.0,filename="/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
 
 
-filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_LSST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_LSST_4.500000e+01_1.800000e+04_Rmin10_Ncl15_Ntomo10_no_sys"]
-chainnames=[r"WFIRST multi-band",r"WFIRST single band+LSST"]
-paranames=[r"$w_0$", r"$w_a$"]
-twochain_single_plot(filename,"WF_ext_LSST.pdf",chainnames,paranames)
-
-
-filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_ALL_0cut_4.428000e+01_2.000000e+03_Rmin10_Ncl20_Ntomo10_no_sys","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_nonifc_0cut_3.543000e+01_2.000000e+03_Rmin10_Ncl20_Ntomo10_no_sys"]
-chainnames=[r"WFIRST Cosmic Shear without IFC",r"WFIRST Cosmic Shear with IFC"]
-paranames=[r"$w_0$", r"$w_a$"]
-twochain_single_plot(filename,"WF_IFC_study.pdf",chainnames,paranames)
+def twochain_multi_plot(filename, out, chainnames, paranames):
+	d1 = np.genfromtxt(filename[0])
+	d2 = np.genfromtxt(filename[1])
+	c = ChainConsumer()
+	c.add_chain(d1[100000:,(0,1,6,3,4)], parameters=paranames, name =chainnames[0])
+	c.add_chain(d2[100000:,(0,1,6,3,4)], name =chainnames[1])
+	c.configure(shade=[True,False],shade_alpha=[0.2,0.2],linestyles=["--", "-"],linewidths=[0.5,1.])	
+	fig = c.plotter.plot(filename="/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
 
 
 
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_DES_3x2pt_LCDM","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_DES_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_LCDM"]
+# chainnames=[r"DES Y1 3x2 Abbott et al",r"DES Y1 3x2, Fourier (WFIRST sys control)", r"WFIRST 3x2, Fourier (WFIRST sys control)"]
+# paranames=[r"$\Omega_m$", r"$S_8$"]
+# DES_WFIRST_single_plot(filename,"WF_DES2.pdf",chainnames,paranames)
 
 
-# def threechain_multi_plot(filename, out, chainnames, paranames):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-# 	d3 = np.genfromtxt(filename[2])
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[50000:,(0,8)], parameters=paranames, name =chainnames[0])
-# 	c.add_chain(d2[50000:,(0,8)], name =chainnames[1])
-# 	c.add_chain(d3[50000:,(0,8)], name =chainnames[2])
-# 	c.configure(shade=True, shade_alpha=0.2, bar_shade=True)
-# 	#c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
-# 	fig = c.plotter.plot(figsize=2.0,filename="/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
-	
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_DES_3x2pt_LCDM","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_DES_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_LCDM_sys"]
+# chainnames=[r"DES Y1 3x2 Abbott et al",r"DES Y1 3x2, Fourier (WFIRST sys control)", r"WFIRST 3x2, Fourier no sys"]
+# paranames=[r"$\Omega_m$", r"$S_8$"]
+# DES_WFIRST_single_plot(filename,"WF_DES3.pdf",chainnames,paranames)
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_DES_3x2pt_LCDM","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_DES_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LCDM_3x2pt_sys"]
+# chainnames=[r"DES Y1 3x2 Abbott et al",r"DES Y1 3x2, Fourier (WFIRST sys control)", r"WFIRST 3x2, Fourier (WFIRST sys control)"]
+# paranames=[r"$\Omega_m$", r"$S_8$"]
+# DES_WFIRST_single_plot(filename,"WF_DES3.pdf",chainnames,paranames)
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_DES_3x2pt_LCDM","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_LCDM"]
+# chainnames=[r"DES Y1 3x2 Abbott et al",r"WFIRST Y1 3x2, Fourier (WFIRST sys control)", r"WFIRST 3x2, Fourier (WFIRST no sys)"]
+# paranames=[r"$\Omega_m$", r"$S_8$"]
+# DES_WFIRST_single_plot(filename,"WF_DES4.pdf",chainnames,paranames)
 
 
-# filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3.300000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_5.400000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG"]
-# chainnames=[r"45 gal/arcmin$^2$", r"33 gal/arcmin$^2$", r"54 gal/arcmin$^2$"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_multi_plot(filename,"WF_ngal.pdf",chainnames,paranames)
+filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_DES_3x2pt_LCDM","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_DES_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_Planck_nolensing_LCDM"]
+chainnames=[r"DES Y1 3x2 Abbott et al 2018",r"DES Y1 3x2, Fourier (WFIRST sys control)", r"WFIRST 3x2, Fourier (WFIRST sys control)", "Planck 2015 no lensing, as in Abbott et al 2018"]
+paranames=[r"$\Omega_m$", r"$S_8$"]
+DES_WFIRST_Planck_single_plot(filename,"WF_DES_Planck.pdf",chainnames,paranames)
+
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_nosys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_LSST_3x2pt_nosys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LSST_3x2pt_nosys"]
+# chainnames=[r"WFIRST HLS",r"LSST",r"WFIRST wide+LSST"]
+# paranames=[r"$w_0$", r"$w_a$"]
+# threechain_single_plot(filename,"WF_LSST_orig.pdf",chainnames,paranames)
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/llike_LSST_3x2pt_photo_bias_sys_pessi","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_sys_opti"]
+# chainnames=[r"WFIRST HLS sys",r"LSST sys",r"WFIRST wide+LSST sys"]
+# paranames=[r"$w_0$", r"$w_a$"]
+# threechain_single_plot(filename,"WF_LSST_sys.pdf",chainnames,paranames)
+
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote_SN10_sys"]
+# chainnames=[r"WFIRST all",r"WFIRST all sys"]
+# paranames=[r"$\Omega_m$", r"$\sigma_8$",r"$h_0$",r"$w_0$", r"$w_a$"]
+# twochain_multi_plot(filename,"WF_ocelote_all_vs_allsys.pdf",chainnames,paranames)
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote_3x2pt_SN10_MG","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote_3x2pt_SN10"]
+# chainnames=[r"WFIRST all",r"WFIRST all sys"]
+# paranames=[r"$\Omega_m$", r"$\sigma_8$",r"$h_0$",r"$w_0$", r"$w_a$"]
+# twochain_multi_plot(filename,"WF_ocelote_MG_vsnonMG.pdf",chainnames,paranames)
+
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote"]
+# chainnames=[r"WFIRST multi-band",r"WFIRST single band+LSST"]
+# paranames=[r"$w_0$", r"$w_a$"]
+# twochain_single_plot(filename,"WF_ocelote.pdf",chainnames,paranames)
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote_shear_shear"]
+# chainnames=[r"WFIRST 3x2pt+clusterN+clusterWL",r"WFIRST WL"]
+# paranames=[r"$\Omega_m$", r"$\sigma_8$",r"$h_0$",r"$w_0$", r"$w_a$"]
+# twochain_multi_plot(filename,"WF_ocelote_all_vs_shear.pdf",chainnames,paranames)
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote_3x2pt","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote_3x2pt_LSST_WFIRST"]
+# chainnames=[r"WFIRST multi-band 3x2pt",r"WFIRST single band+LSST 3x2pt"]
+# paranames=[r"$\Omega_m$", r"$\sigma_8$",r"$h_0$",r"$w_0$", r"$w_a$"]
+# twochain_multi_plot(filename,"WF_ocelote_LSST_WFIRST.pdf",chainnames,paranames)
+
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote_3x2pt"]
+# chainnames=[r"WFIRST 3x2pt+clusterN+clusterWL",r"WFIRST 3x2pt"]
+# paranames=[r"$\Omega_m$", r"$\sigma_8$",r"$h_0$",r"$w_0$", r"$w_a$"]
+# twochain_multi_plot(filename,"WF_ocelote_all_vs_3x2.pdf",chainnames,paranames)
+
+
+# filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_ALL_0cut_4.428000e+01_2.000000e+03_Rmin10_Ncl20_Ntomo10_no_sys","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like_IFC/like_WFIRST_nonifc_0cut_3.543000e+01_2.000000e+03_Rmin10_Ncl20_Ntomo10_no_sys"]
+# chainnames=[r"WFIRST Cosmic Shear without IFC",r"WFIRST Cosmic Shear with IFC"]
+# paranames=[r"$w_0$", r"$w_a$"]
+# twochain_single_plot(filename,"WF_IFC_study.pdf",chainnames,paranames)
+
+
+
+
+
 
 # filename=["/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_2.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_1.500000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG","/Users/teifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_4.500000e+01_4.000000e+03_Rmin10_Ncl15_Ntomo10_no_sys_MG"]
 # chainnames=[r"2000 deg$^2$", r"1500 deg$^2$", r"4000 deg$^2$"]
@@ -59,264 +199,6 @@ twochain_single_plot(filename,"WF_IFC_study.pdf",chainnames,paranames)
 
 
 
-
-
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_12Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_16Mpc.txt"]
-# chainnames=["8/8 Mpc", "8/12 Mpc", "8/16 Mpc"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_multi_plot(filename,"scale_cuts_info_loss.pdf",chainnames,paranames)
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_1H_conti.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_12Mpc_1H_conti.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_16Mpc_1H_conti.txt"]
-# chainnames=["8/8 Mpc", "8/12 Mpc", "8/16 Mpc"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_multi_plot(filename,"scale_cuts_contaminated.pdf",chainnames,paranames)
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_AGN.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_CX.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_AD.txt"]
-# chainnames=["AGN", "CX", "AD"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_multi_plot(filename,"baryons.pdf",chainnames,paranames)
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_AGN_geo.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_CX_geo.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_AD_geo.txt"]
-# chainnames=["AGN", "CX", "AD"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_multi_plot(filename,"baryons_geo.pdf",chainnames,paranames)
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_lph_conti.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_sph_conti.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_shear_conti.txt"]
-# chainnames=["lens photo-z wrong", "source photo-z wrong", "shear calib wrong"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_multi_plot(filename,"obs_sys.pdf",chainnames,paranames)
-
-# def threechain_multi_plot(filename, out, chainnames, paranames):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-# 	d3 = np.genfromtxt(filename[2])
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[100000:,(0,17)], parameters=paranames, name =chainnames[0])
-# 	c.add_chain(d2[100000:,(0,17)], name =chainnames[1])
-# 	c.add_chain(d3[100000:,(0,17)], name =chainnames[2])
-# 	c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
-# 	fig = c.plot(filename="/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/plots/"+out,truth=[0.295,0.8344])
-
-# filename=["/Users/teifler/Dropbox/1_eli_chain_exchange/1x2pt_LCDM_WL.txt","/Users/teifler/Dropbox/1_eli_chain_exchange/1x2pt_LCDM_WL_small_scales.txt","/Users/teifler/Dropbox/1_eli_chain_exchange/1x2pt_LCDM_WL_small_scales_AGN.txt"]
-# chainnames=["WL", "WL incl small", "WL AGN incl small"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_multi_plot(filename,"WL.pdf",chainnames,paranames)
-
-
-# def threechain_indivsmulti_plot(filename, out, chainnames, paranames):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-# 	d3 = np.genfromtxt(filename[2])
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[100000:,(0,17)], parameters=paranames, name =chainnames[0])
-# 	c.add_chain(d2[100000:,(0,27)], name =chainnames[1])
-# 	c.add_chain(d3[100000:,(0,27)], name =chainnames[2])
-# 	c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
-# 	fig = c.plot(filename="/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/plots/"+out,truth=[0.295,0.8344])
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/1x2pt_LCDM_WL.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/2x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc.txt"]
-# chainnames=["Weak Lensing", "GGL+Clustering", "3x2pt"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_indivsmulti_plot(filename,"indivsmulti.pdf",chainnames,paranames)
-
-# def twochain_multi_plot(filename, out, chainnames, paranames):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[100000:,(0,27)], parameters=paranames, name =chainnames[0])
-# 	c.add_chain(d2[100000:,(0,27)], name =chainnames[1])
-# 	c.configure(shade=[True,False],shade_alpha=[0.2,0.2],linestyles=["--", "-"],linewidths=[0.5,1.])	
-# 	fig = c.plot(filename="/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/plots/"+out,truth=[0.295,0.8344])
-
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_flask_cov.txt"]
-# chainnames=["CosmoLike cov", "FLASK cov"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# twochain_multi_plot(filename,"cov impact.pdf",chainnames,paranames)
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/2x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/2x2pt_LCDM_8Mpc_RSD_NonLimber.txt"]
-# chainnames=["no RSD in data", "RSD in data"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# twochain_multi_plot(filename,"RSD2x2.pdf",chainnames,paranames)
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_RSD_NonLimber.txt"]
-# chainnames=["no RSD in data", "RSD in data"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# twochain_multi_plot(filename,"RSD3x2.pdf",chainnames,paranames)
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_coyote.txt"]
-# chainnames=["baseline", "Cosmic Emu in data"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# twochain_multi_plot(filename,"emu.pdf",chainnames,paranames)
-
-
-# def twochain_multi_plot(filename, out, chainnames, paranames):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[100000:,(0,17)], parameters=paranames, name =chainnames[0])
-# 	c.add_chain(d2[100000:,(0,27)], name =chainnames[1])
-# 	c.configure(shade=[True,False],shade_alpha=[0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.])	
-# 	fig = c.plot(filename="/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/plots/"+out,truth=[0.295,0.8344])
-
-# filename=[,"/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/1x2pt_LCDM_WL.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/2x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_8Mpc_12Mpc.txt"]
-# chainnames=["Weak Lensing", "GGL+Clustering", "3x2pt"]
-# paranames=[r"$\Omega_m$", r"$\sigma_8$"]
-# threechain_indivsmulti_plot(filename,"indivsmulti.pdf",chainnames,paranames)
-
-
-
-# def twochain_single_plot(filename, out):
-# 	d1 = np.genfromtxt(filename[0])
-
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[5000:,7:9], parameters=[r"$\Sigma_0$", r"$\mu_0$"], name ="")
-# 	c.configure(shade=[True],shade_alpha=[0.2],linestyles=["--", "-"],linewidths=[0.5])	
-
-
-# 	fig = c.plot(figsize=[7,6],filename='plots/'+out,truth=[0.0,0.0])
-# 	fig.set_size_inches(8.0 + fig.get_size_inches())
-# 	fig.show()
-
-# filename=["/Users/teifler/Downloads/like_LSST_all_2pt_noredshifterr_nuisance.txt"]
-
-# twochain_single_plot(filename,"chain_LSST_mu_Sigma_nosys.pdf")
-
-# def twochain_multi_plot(filename, out):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[20000:,(0,1,2,3,4,27)], parameters=[r"$\Omega_m$", r"$A_s$", r"$n_s$",r"$\Omega_b$",r"$h_0$",r"$\sigma_8$"], name ="no contamination")
-# 	c.add_chain(d2[20000:,(0,1,2,3,4,27)], parameters=[r"$\Omega_m$", r"$A_s$", r"$n_s$",r"$\Omega_b$",r"$h_0$",r"$\sigma_8$"], name ="1H-term contamination")
-# 	c.configure(shade=[True,False],shade_alpha=[0.2,0.2],linestyles=["--", "-"],linewidths=[0.5,1.])	
-
-
-# 	fig = c.plot(filename='plots/'+out,truth=[0.295,2.260574e-09,0.9676,0.0468,0.6881,0.8344])
-# 	fig.set_size_inches(8 + fig.get_size_inches())
-	
-
-# filename=["/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_1H_conti.txt"]
-# twochain_multi_plot(filename,"scale_cuts8_8MPC.pdf")
-
-# filename=["/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_12Mpc.txt","/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_12Mpc_1H_conti.txt"]
-# twochain_multi_plot(filename,"scale_cuts8_12MPC.pdf")
-
-# filename=["/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_16Mpc.txt","/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_16Mpc_1H_conti.txt"]
-# twochain_multi_plot(filename,"scale_cuts8_16MPC.pdf")
-
-
-
-
-# def twochain_multi_plot_new(filename, out):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[20000:,(23,24,25,26)], parameters=[r"$A_1$", r"$A_2$", r"$A_3$",r"$A_4$"], name ="no contamination")
-# 	c.add_chain(d2[20000:,(23,24,25,26)], parameters=[r"$A_1$", r"$A_2$", r"$A_3$",r"$A_4$"], name ="1H-term contamination")
-# 	c.configure(shade=[True,False],shade_alpha=[0.2,0.2],linestyles=["--", "-"],linewidths=[0.5,1.])	
-
-
-# 	fig = c.plot(filename='plots/'+out,truth=[0.0,0.0,0.0,0.0])
-# 	fig.set_size_inches(8 + fig.get_size_inches())
-	
-
-# filename=["/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc.txt","/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_1H_conti.txt"]
-# twochain_multi_plot_new(filename,"scale_cuts8_8MPC_IA.pdf")
-
-# filename=["/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_12Mpc.txt","/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_12Mpc_1H_conti.txt"]
-# twochain_multi_plot_new(filename,"scale_cuts8_12MPC_IA.pdf")
-
-# filename=["/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_16Mpc.txt","/Users/teifler/Dropbox/1_chain_exchange/cosmolike/3x2pt_LCDM_8Mpc_16Mpc_1H_conti.txt"]
-# twochain_multi_plot_new(filename,"scale_cuts8_16MPC_IA.pdf")
-
-
-# def twochain_walk_plot(filename, out):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[20000:,0:5], parameters=[r"$\Omega_m$", r"$A_s$", r"$n_s$",r"$\Omega_b$",r"$h_0$"])
-# 	c.add_chain(d2[20000:,0:5], parameters=[r"$\Omega_m$", r"$A_s$", r"$n_s$",r"$\Omega_b$",r"$h_0$"])
-
-# 	fig = c.plot_walks(filename='plots/'+out,truth=[0.295,2.260574e-09,0.9676,0.0468,0.6881], convolve=100)
-# 	fig.set_size_inches(4.5 + fig.get_size_inches())
-	
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut3.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut3_contaminated_data.txt"]
-# twochain_walk_plot(filename,"walk_scale_cuts8MPC.pdf")
-
-
-# def threechain_multi_plot(filename, out):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-# 	d3 = np.genfromtxt(filename[2])
-
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[20000:,0:15], parameters=[r"$\Omega_m$", r"$A_s$", r"$n_s$",r"$\Omega_b$",r"$h_0$",r"$b1_1$",r"$b1_2$",r"$b1_3$",r"$b1_4$",r"$b1_5$",r"$b2_1$",r"$b2_2$",r"$b2_3$",r"$b2_4$",r"$b2_5$"], name ="4 Mpc")
-# 	c.add_chain(d2[20000:,0:15], name ="4/8 Mpc")
-# 	c.add_chain(d3[20000:,0:15], name ="8 Mpc")
-# 	c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-"],linewidths=[0.5, 1., 1.])	
-
-
-# 	fig = c.plot(filename='plots/'+out,truth=[0.295,2.260574e-09,0.9676,0.0468,0.6881,1.45,1.55,1.65,1.8,2.0,0.0,0.0,0.0,0.0,0.0])
-# 	fig.set_size_inches(4.5 + fig.get_size_inches())
-	
-# def threechain2_multi_plot(filename, out):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-# 	d3 = np.genfromtxt(filename[2])
-
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[20000:,0:11], parameters=[r"$\Omega_m$", r"$A_s$", r"$n_s$",r"$\Omega_b$",r"$\omega_\nu$",r"$h_0$",r"$b1_1$",r"$b1_2$",r"$b1_3$",r"$b1_4$",r"$b1_5$"], name ="2 Mpc")
-# 	c.add_chain(d2[20000:,0:11], name ="4 Mpc")
-# 	c.add_chain(d3[20000:,0:11], name ="8 Mpc")
-# 	c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-"],linewidths=[0.5, 1., 1.])	
-
-
-# 	fig = c.plot(filename='plots/'+out,truth=[0.295,0.8344,0.9676,0.0468,0.0013,0.6881,1.45,1.55,1.65,1.8,2.0])
-# 	fig.set_size_inches(4.5 + fig.get_size_inches())
-	
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut1_nosys.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut2_nosys.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut3_nosys.txt"]
-
-# threechain_multi_plot(filename,"chain_consumerY1_cuts_nosys.pdf")
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut1.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut2.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut3.txt"]
-
-# threechain_multi_plot(filename,"chain_consumerY1_cuts.pdf")
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like_old/3x2pt_LCDM_cut2Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like_old/3x2pt_LCDM_cut4Mpc.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like_old/3x2pt_LCDM_cut8Mpc.txt"]
-
-# threechain2_multi_plot(filename,"chain_consumerY1_cut_nob2.pdf")
-
-
-
-# def threechain_single_plot(filename, out):
-# 	d1 = np.genfromtxt(filename[0])
-# 	d2 = np.genfromtxt(filename[1])
-# 	d3 = np.genfromtxt(filename[2])
-
-# 	c = ChainConsumer()
-# 	c.add_chain(d1[20000:,0:2], parameters=[r"$\Omega_m$", r"$A_s$"], name ="base")
-# 	c.add_chain(d2[20000:,0:2], parameters=[r"$\Omega_m$", r"$A_s$"], name ="b2 marg")
-# 	c.add_chain(d3[20000:,0:2], parameters=[r"$\Omega_m$", r"$A_s$"], name ="b1b2 marg")
-
-# 	c.configure(shade=[True,False,False],shade_alpha=[0.5,0.5,0.5],linestyles=["--", "-","-."],linewidths=[1.,1.,1.])	
-
-
-# 	fig = c.plot(filename='plots/'+out,figsize="column",truth=[0.295,2.260574e-09])
-# #	fig = c.plot(figsize=(12, 12))
-# 	#fig.set_size_inches(4.5 + fig.get_size_inches())
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut1_nosys_v2_AsOm.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut1_nosys_v2_AsOmb2.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut1_nosys_v2_AsOmb2b1.txt"]
-
-# threechain_single_plot(filename,"testb2_1.pdf")
-
-# filename=["/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut1_nosys_v2_AsOm.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut1_nosys_v2_b2bs_AsOmb2.txt","/Users/teifler/Dropbox/cosmolike/top-level/des_mpp/like/3x2pt_LCDM_scut1_nosys_v2_b2bs_AsOmb2b1.txt"]
-
-# threechain_single_plot(filename,"testb2_2.pdf")
 
 
 
