@@ -1,21 +1,13 @@
 #!/bin/bash
 #PBS -S /bin/bash
 #PBS -V
-#PBS -W group_list=cosmo
-#PBS -q high_pri
-#PBS -J 1-8850
+#PBS -q mediumq
 #PBS -l select=1:ncpus=1:mem=1GB
-#PBS -l place=free:shared
-#PBS -l walltime=8:00:00
-#PBS -N W1st_cov
-#PBS -e /home/u17/timeifler/output/
-#PBS -o /home/u17/timeifler/output/
-
-module load gsl/2/2.1
+#PBS -l walltime=12:00:00
+#PBS -J 1-7863
+#PBS -N WF_1-10k
+#PBS -e /aurora_nobackup/sunglass/teifler/output/
+#PBS -o /aurora_nobackup/sunglass/teifler/output/
 
 cd $PBS_O_WORKDIR
-/home/u17/timeifler/CosmoLike/WFIRST_forecasts/./compute_covariances_fourier $PBS_ARRAY_INDEX >& /home/u17/timeifler/output/job_output_$PBS_ARRAY_INDEX.log
-
-
-
-
+/home/teifler/CosmoLike/WFIRST_forecasts/./compute_covariances_fourier $PBS_ARRAY_INDEX >& /aurora_nobackup/sunglass/teifler/job_output.log
