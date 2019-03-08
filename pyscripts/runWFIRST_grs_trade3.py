@@ -1,21 +1,22 @@
-#!/usr/bin/env python
+#!/usr/bin/env /home/teifler/Python-2.7.8/python
 
 import numpy as np
 import emcee
 import ctypes
 n_trade = 3
-chainfile = "trade%d_sys" %(n_trade)
+chainfile = "/home/teifler/Dropbox/cosmolike/top-level/WFIRST/like/trade%d_sys" %(n_trade)
 print chainfile
-lib=ctypes.cdll.LoadLibrary("./like_grs.so")
 
-init=lib.init
-init.argtypes=[ctypes.c_int]
+lib=ctypes.cdll.LoadLibrary("/home/teifler/Dropbox/cosmolike/top-level/WFIRST/like_grs.so")
 
-loglike=lib.log_multi_like
+init=lib.init_GRS
+init.argtypes=[ctypes.c_int,ctypes.c_int]
+
+loglike=lib.log_like_GRS
 loglike.argtypes=[ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double,ctypes.c_double]
 loglike.restype=ctypes.c_double
 
-init(n_trade)
+init(n_trade, 0)
 
 def likelihood(p):
 #   print p
@@ -24,9 +25,9 @@ def likelihood(p):
    return like
   
 ndim=23
-nwalker=50
-sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood,threads=4)
-starting_point=np.array([0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,1.2,1.3,1.45,1.6,1.70,1.8,1.9,290.,290.,290.,290.,290.,290.,290.,0.001,0.094])
+nwalker=100
+sampler = emcee.EnsembleSampler(nwalker, ndim, likelihood,threads=32)
+starting_point=np.array([0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,1.2,1.3,1.45,1.6,1.70,1.8,1.9,290.,290.,290.,290.,290.,290.,290.,0.001,0.24])
 std=np.array([0.05,0.05,0.03,0.5,1,0.005,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.1,10.,10.,10.,10.,10.,10.,10.,0.001,0.01])/10.
 p0 = emcee.utils.sample_ball(starting_point, std, size=nwalker)
 f=open(chainfile,'w')
