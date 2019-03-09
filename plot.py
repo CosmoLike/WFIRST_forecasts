@@ -92,7 +92,7 @@ def threechain_single_plot(filename, out, chainnames, paranames):
 
 	c.configure(shade=True,kde=2.0,shade_alpha=0.2, bar_shade=True)
 	#c.configure(shade=[True,False,False],shade_alpha=[0.2,0.2,0.2],linestyles=["--", "-", "-."],linewidths=[0.5,1.,1.])	
-	fig = c.plotter.plot(figsize=2.0,filename="/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
+	fig = c.plotter.plot(figsize=3.0,filename="/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/plots/"+out)
 
 
 def twochain_multi_plot(filename, out, chainnames, paranames):
@@ -128,21 +128,21 @@ def twochain_multi_plot(filename, out, chainnames, paranames):
 # DES_WFIRST_single_plot(filename,"WF_DES4.pdf",chainnames,paranames)
 
 
-filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_DES_3x2pt_LCDM","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_DES_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_Planck_nolensing_LCDM"]
-chainnames=[r"DES Y1 3x2 Abbott et al 2018",r"DES Y1 3x2, Fourier (WFIRST sys control)", r"WFIRST 3x2, Fourier (WFIRST sys control)", "Planck 2015 no lensing, as in Abbott et al 2018"]
-paranames=[r"$\Omega_m$", r"$S_8$"]
-DES_WFIRST_Planck_single_plot(filename,"WF_DES_Planck.pdf",chainnames,paranames)
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_DES_3x2pt_LCDM","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_DES_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LCDM_3x2pt_sys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_Abbott_Planck_nolensing_LCDM"]
+# chainnames=[r"DES Y1 3x2 Abbott et al 2018",r"DES Y1 3x2, Fourier (WFIRST sys control)", r"WFIRST 3x2, Fourier (WFIRST sys control)", "Planck 2015 no lensing, as in Abbott et al 2018"]
+# paranames=[r"$\Omega_m$", r"$S_8$"]
+# DES_WFIRST_Planck_single_plot(filename,"WF_DES_Planck.pdf",chainnames,paranames)
 
 
-# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_nosys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_LSST_3x2pt_nosys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LSST_3x2pt_nosys"]
-# chainnames=[r"WFIRST HLS",r"LSST",r"WFIRST wide+LSST"]
-# paranames=[r"$w_0$", r"$w_a$"]
-# threechain_single_plot(filename,"WF_LSST_orig.pdf",chainnames,paranames)
+filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_nosys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_LSST_3x2pt_nosys","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LSST_3x2pt_nosys"]
+chainnames=[r"WFIRST HLS",r"LSST",r"WFIRST wide+LSST"]
+paranames=[r"$w_0$", r"$w_a$"]
+threechain_single_plot(filename,"WF_LSST_orig.pdf",chainnames,paranames)
 
-# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/llike_LSST_3x2pt_photo_bias_sys_pessi","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_sys_opti"]
-# chainnames=[r"WFIRST HLS sys",r"LSST sys",r"WFIRST wide+LSST sys"]
-# paranames=[r"$w_0$", r"$w_a$"]
-# threechain_single_plot(filename,"WF_LSST_sys.pdf",chainnames,paranames)
+filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_3x2pt_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_LSST_3x2pt_photo_bias_sys_pessi","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_LSST_3x2pt_obssys"]
+chainnames=[r"WFIRST HLS sys",r"LSST sys",r"WFIRST wide+LSST sys"]
+paranames=[r"$w_0$", r"$w_a$"]
+threechain_single_plot(filename,"WF_LSST_sys.pdf",chainnames,paranames)
 
 
 # filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/like/like_WFIRST_ocelote_SN10_sys"]
