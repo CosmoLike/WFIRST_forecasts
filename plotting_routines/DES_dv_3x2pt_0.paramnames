@@ -1,0 +1,27 @@
+omegam	\Omega_\mathrm{m}
+AS	A_\mathrm{s}
+ns	n_\mathrm{s}
+omegab	\Omega_\mathrm{b}
+omeganuh2	\Omega_{\nu} h^2
+h0	h
+DES_b1	b_\mathrm{DES}^1
+DES_b2	b_\mathrm{DES}^2
+DES_b3	b_\mathrm{DES}^3
+DES_b4	b_\mathrm{DES}^4
+DES_b5	b_\mathrm{DES}^5
+DES_DzL1	\Delta z_\mathrm{l,DES}^1
+DES_DzL2	\Delta z_\mathrm{l,DES}^2
+DES_DzL3	\Delta z_\mathrm{l,DES}^3
+DES_DzL4	\Delta z_\mathrm{l,DES}^4
+DES_DzL5	\Delta z_\mathrm{l,DES}^5
+DES_DzS1	\Delta z_\mathrm{s,DES}^1
+DES_DzS2	\Delta z_\mathrm{s,DES}^2
+DES_DzS3	\Delta z_\mathrm{s,DES}^3
+DES_DzS4	\Delta z_\mathrm{s,DES}^4
+DES_m1	m_\mathrm{DES}^1
+DES_m2	m_\mathrm{DES}^2
+DES_m3	m_\mathrm{DES}^3
+DES_m4	m_\mathrm{DES}^4
+DES_AIA	A_\mathrm{IA,DES}
+DES_alphaIA	\alpha_\mathrm{IA,DES}
+sigma_8 \sigma_8

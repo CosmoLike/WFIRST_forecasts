@@ -1,0 +1,57 @@
+omega_m	\Omega_\mathrm{m}
+sigma_8	A_\mathrm{s}
+n_s	n_\mathrm{s}
+w0	w_0
+wa	w_a
+omega_b	\Omega_\mathrm{b}
+h0	h
+bias_0	b_1
+bias_1	b_2
+bias_2	b_3
+bias_3	b_4
+bias_4	b_5
+bias_5	b_6
+bias_6	b_7
+bias_7	b_8
+bias_8	b_9
+bias_9	b_{10}
+source_z_bias_0	\Delta z_\mathrm{source}^1
+source_z_bias_1	\Delta z_\mathrm{source}^2
+source_z_bias_2	\Delta z_\mathrm{source}^3
+source_z_bias_3	\Delta z_\mathrm{source}^4
+source_z_bias_4	\Delta z_\mathrm{source}^5
+source_z_bias_5	\Delta z_\mathrm{source}^6
+source_z_bias_6	\Delta z_\mathrm{source}^7
+source_z_bias_7	\Delta z_\mathrm{source}^8
+source_z_bias_8	\Delta z_\mathrm{source}^9
+source_z_bias_9	\Delta z_\mathrm{source}^{10}
+source_z_s 	\sigma z_\mathrm{source}
+lens_z_bias_0	\Delta z_\mathrm{lens}^1
+lens_z_bias_1	\Delta z_\mathrm{lens}^2
+lens_z_bias_2	\Delta z_\mathrm{lens}^3
+lens_z_bias_3	\Delta z_\mathrm{lens}^4
+lens_z_bias_4	\Delta z_\mathrm{lens}^5
+lens_z_bias_5	\Delta z_\mathrm{lens}^6
+lens_z_bias_6	\Delta z_\mathrm{lens}^7
+lens_z_bias_7	\Delta z_\mathrm{lens}^8
+lens_z_bias_8	\Delta z_\mathrm{lens}^9
+lens_z_bias_9	\Delta z_\mathrm{lens}^{10}
+lens_z_s	\sigma z_\mathrm{lens}
+shear_m_0	m_1
+shear_m_1	m_2
+shear_m_2	m_3
+shear_m_3	m_4
+shear_m_4	m_5
+shear_m_5	m_6
+shear_m_6	m_7
+shear_m_7	m_8
+shear_m_8	m_9
+shear_m_9	m_{10}
+m_lambda_0	A
+m_lambda_1	B
+m_lambda_2	C
+m_lambda_3	\sigma_0
+m_lambda_4	q_m
+m_lambda_5	q_z
+log_like
+
