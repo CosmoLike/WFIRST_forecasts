@@ -39,7 +39,7 @@
 // #include "../cosmolike_core/theory/external_prior.c"
 // #include "../cosmolike_core/theory/GRS.c"
 
-void init_GRS(int n_trade);
+void init_GRS(int n_trade, int BAO_flag);
 
 double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, double OMB, double H0, 
 	double B1, double B2, double B3, double B4, double B5, double B6, double B7, 
@@ -283,6 +283,7 @@ int set_cosmology_params_GRS(double OMM, double S8, double NS, double W0,double 
 int set_nuisance_GRS_gbias(double B1, double B2, double B3, double B4, double B5, double B6, double B7)
 {
   if (B1 == -42.){return 1;}
+  
   GRS_gal.b_g[0] = B1;
   GRS_gal.b_g[1] = B2;
   GRS_gal.b_g[2] = B3;
@@ -367,7 +368,7 @@ void set_variance_GRS(double *k, double *mu,double dk, double dmu, double *var){
 //	printf("total S/N: %e\n",SN);
 }
 
-void init_GRS(int nt){
+void init_GRS(int nt, int BAO_flag){
 	set_cosmological_parameters_to_Planck_15_TT_TE_EE_lowP();
 	switch(nt){
 		case 1:
@@ -410,6 +411,10 @@ void init_GRS(int nt){
 	set_variance_GRS(GRS.k,GRS.mu, dk, dmu, GRS.var);
 	like.GRS = 1;
 	printf("GRS initalized\n");
+	if (BAO_flag==1) {
+		init_BAO_WFIRST_spectro();
+		like.BAO=1;
+	}
 }
 
 
@@ -426,23 +431,23 @@ double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, doubl
   double chisqr,a,log_L_prior=0.0;
   
   if (set_cosmology_params_GRS(OMM,S8,NS,W0,WA,OMB,H0)==0){
-    printf("Cosmology out of bounds\n");
+    //printf("Cosmology out of bounds\n");
     return -1.0e15;
   }
   if (set_nuisance_GRS_gbias(B1,B2,B3,B4,B5,B6,B7)==0){
-    printf("GRS Gbias out of range\n");
+    //printf("GRS Gbias out of range\n");
     return -1.0e15;
   } 
   if (set_nuisance_GRS_sigmas(SIGMAZ,SIGMAP1,SIGMAP2,SIGMAP3,SIGMAP4,SIGMAP5,SIGMAP6,SIGMAP7)==0){
-    printf("GRS sigmas out of range\n");
+    //printf("GRS sigmas out of range\n");
     return -1.0e15;
   } 
   if (set_nuisance_GRS_pshot(PSHOT)==0){
-    printf("GRS PSHOT out of range\n");
+    //printf("GRS PSHOT out of range\n");
     return -1.0e15;
   } 
   if (set_nuisance_GRS_kstar(KSTAR)==0){
-    printf("GRS KSTAR out of range\n");
+    //printf("GRS KSTAR out of range\n");
     return -1.0e15;
   } 
 
@@ -451,7 +456,13 @@ double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, doubl
   log_L_prior -= 0.5*pow((SIGMAZ-1.e-3)/1.e-4,2.);
   // add Gaussian prior on k_star
   log_L_prior -= 0.5*pow((KSTAR-0.24)/0.024,2.);
+  
+  double GRS_gal_bias_fid[7]={1.2,1.3,1.45,1.6,1.70,1.8,1.9};
+  for (i = 0; i < GRS.N_z; i++){
+	 log_L_prior -= 0.5*pow((GRS_gal.b_g[i]-GRS_gal_bias_fid[i])/0.1,2.);  
+  }
 
+  if(like.BAO==1) log_L_prior += log_L_BAO(); //log_L_BAO is neg
   set_data_GRS(GRS.k,GRS.mu,pred);
 
   chisqr=0.0;

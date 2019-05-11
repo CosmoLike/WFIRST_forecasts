@@ -1,4 +1,3 @@
-#include <math.h>
 #include <stdlib.h>
 #if !defined(__APPLE__)
 #include <malloc.h>
@@ -8,7 +7,10 @@
 #include <time.h>
 #include <string.h>
 
+#include <fftw3.h>
+
 #include <gsl/gsl_errno.h>
+#include <gsl/gsl_sf_erf.h>
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_sf_gamma.h>
@@ -19,22 +21,25 @@
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_sf_expint.h>
 #include <gsl/gsl_deriv.h>
+#include <gsl/gsl_interp2d.h>
+#include <gsl/gsl_spline2d.h>
 
-#include "../../theory/basics.c"
-#include "../../theory/structs.c"
-#include "../../theory/parameters.c"
-#include "../../emu13/emu.c"
-#include "../../theory/recompute.c"
-#include "../../theory/cosmo3D.c"
-#include "../../theory/redshift.c"
-#include "../../theory/halo.c"
-#include "../../theory/HOD.c"
-#include "../../theory/cosmo2D_fourier.c"
-#include "../../theory/IA.c"
-#include "../../theory/cluster.c"
-#include "../../theory/BAO.c"
-#include "../../theory/external_prior.c"
-#include "../../theory/GRS.c"
+#include "../cosmolike_core/theory/basics.c"
+#include "../cosmolike_core/theory/structs.c"
+#include "../cosmolike_core/theory/parameters.c"
+#include "../cosmolike_core/emu17/P_cb/emu.c"
+#include "../cosmolike_core/theory/recompute.c"
+#include "../cosmolike_core/theory/cosmo3D.c"
+#include "../cosmolike_core/theory/redshift_spline.c"
+#include "../cosmolike_core/theory/halo.c"
+#include "../cosmolike_core/theory/HOD.c"
+#include "../cosmolike_core/theory/pt.c"
+#include "../cosmolike_core/theory/cosmo2D_fourier.c"
+#include "../cosmolike_core/theory/IA.c"
+#include "../cosmolike_core/theory/cluster.c"
+#include "../cosmolike_core/theory/BAO.c"
+#include "../cosmolike_core/theory/external_prior.c"
+#include "../cosmolike_core/theory/GRS.c"
 
 void init_GRS(int n_trade, int BAO_flag);
 
@@ -70,7 +75,7 @@ void fill_GRS_default_parameters(){
 	GRS.N_mu = 10;
 	// default value from Wang et al. 2013 (p.4)
 	GRS.k_star = 0.24; //in h/Mpc
-	GRS.k_min = 0.01; //in h/Mpc
+	GRS.k_min = 0.001; //in h/Mpc //Wang direct conversation
 	GRS.k_max = 0.3; //in h/Mpc
 }
 
@@ -110,14 +115,17 @@ void init_GRS_WFIRST_trade1(){
 	GRS_gal.b_g[4] = 1.70;
 	GRS_gal.b_g[5] = 1.82;
 	GRS_gal.b_g[6] = 1.93;
+
 	for (int i = 0; i < GRS.N_z; i++){
+		GRS_gal.b_g_fid[i]=GRS_gal.b_g[i]; //fiducial input values=center for prior calculation
 		GRS_gal.sigma_p[i] = 290.0; // in km/s
+		GRS_gal.sigma_p_fid[i] = 290.0; // in km/s, fiducial input values=center for prior calculation
 		GRS_gal.sigma_z[i] = 1.e-3; // fractional accuracy
 		GRS_gal.P_shot[i] = 0.0; // in (Mpc/h)^3
 	}
+	GRS_gal.sigma_p_fid_sigma = 50.0; // in km/s, sigma for prior calculation
 	fill_GRS_default_parameters();
 	fill_GRS_reference_cosmology();
-
 }
 
 void init_GRS_WFIRST_trade2(){
@@ -140,6 +148,8 @@ void init_GRS_WFIRST_trade2(){
 	GRS.V_z[4] = 2.571e+9;
 	GRS.V_z[5] = 2.617e+9;
 	GRS.V_z[6] = 2.183e+9;
+	
+
 	// galaxy parameters
 	// galaxy density in (h/Mpc)^3
 	GRS_gal.n_g[0] = 2.551e-3; 
@@ -157,13 +167,15 @@ void init_GRS_WFIRST_trade2(){
 	GRS_gal.b_g[5] = 1.80;
 	GRS_gal.b_g[6] = 1.91;
 	for (int i = 0; i < GRS.N_z; i++){
+		GRS_gal.b_g_fid[i]=GRS_gal.b_g[i]; //fiducial input values=center for prior calculation
 		GRS_gal.sigma_p[i] = 290.0; // in km/s
+		GRS_gal.sigma_p_fid[i] = 290.0; // in km/s, fiducial input values=center for prior calculation
 		GRS_gal.sigma_z[i] = 1.e-3; // fractional accuracy
 		GRS_gal.P_shot[i] = 0.0; // in (Mpc/h)^3
 	}
+	GRS_gal.sigma_p_fid_sigma = 50.0; // in km/s, sigma for prior calculation
 	fill_GRS_default_parameters();
 	fill_GRS_reference_cosmology();
-
 }
 void init_GRS_WFIRST_trade3(){
 
@@ -202,10 +214,13 @@ void init_GRS_WFIRST_trade3(){
 	GRS_gal.b_g[5] = 1.79;
 	GRS_gal.b_g[6] = 1.90;
 	for (int i = 0; i < GRS.N_z; i++){
+		GRS_gal.b_g_fid[i]=GRS_gal.b_g[i]; //fiducial input values=center for prior calculation
 		GRS_gal.sigma_p[i] = 290.0; // in km/s
+		GRS_gal.sigma_p_fid[i] = 290.0; // in km/s, fiducial input values=center for prior calculation
 		GRS_gal.sigma_z[i] = 1.e-3; // fractional accuracy
 		GRS_gal.P_shot[i] = 0.0; // in (Mpc/h)^3
 	}
+	GRS_gal.sigma_p_fid_sigma = 50.0; // in km/s, sigma for prior calculation
 	fill_GRS_default_parameters();
 	fill_GRS_reference_cosmology();
 }
@@ -230,6 +245,8 @@ void init_GRS_WFIRST_trade4(){
 	GRS.V_z[4] = 1.286e+9;
 	GRS.V_z[5] = 1.309e+9;
 	GRS.V_z[6] = 1.091e+9;
+
+
 	// galaxy parameters
 	// galaxy density in (h/Mpc)^3
 	GRS_gal.n_g[0] = 4.907e-3; 
@@ -247,14 +264,18 @@ void init_GRS_WFIRST_trade4(){
 	GRS_gal.b_g[5] = 1.80;
 	GRS_gal.b_g[6] = 1.91;
 	for (int i = 0; i < GRS.N_z; i++){
+		GRS_gal.b_g_fid[i]=GRS_gal.b_g[i]; //fiducial input values=center for prior calculation
 		GRS_gal.sigma_p[i] = 290.0; // in km/s
+		GRS_gal.sigma_p_fid[i] = 290.0; // in km/s, fiducial input values=center for prior calculation
 		GRS_gal.sigma_z[i] = 1.e-3; // fractional accuracy
 		GRS_gal.P_shot[i] = 0.0; // in (Mpc/h)^3
 	}
+	GRS_gal.sigma_p_fid_sigma = 50.0; // in km/s, sigma for prior calculation
 	fill_GRS_default_parameters();
 	fill_GRS_reference_cosmology();
-
 }
+
+
 int set_cosmology_params_GRS(double OMM, double S8, double NS, double W0,double WA, double OMB, double H0)
 {
   cosmology.Omega_m=OMM;
@@ -292,7 +313,7 @@ int set_nuisance_GRS_gbias(double B1, double B2, double B3, double B4, double B5
 //  GRS_gal.b_g[8] = B9;
 //  GRS_gal.b_g[9] = B10;
   for (int i = 0; i < GRS.N_z; i++){
-    if (GRS_gal.b_g[i] < 1.0 || GRS_gal.b_g[i] > 2.0) return 0;
+    if (GRS_gal.b_g[i] < 0.8 || GRS_gal.b_g[i] > 3.0) return 0;
   }
   return 1;
 } 
@@ -367,6 +388,7 @@ void set_variance_GRS(double *k, double *mu,double dk, double dmu, double *var){
 
 void init_GRS(int nt, int BAO_flag){
 	set_cosmological_parameters_to_Planck_15_TT_TE_EE_lowP();
+	set_prior_cosmology();
 	switch(nt){
 		case 1:
 			printf("initialize GRS trade study case 1\n");
@@ -404,12 +426,13 @@ void init_GRS(int nt, int BAO_flag){
 		// use linear spacing in mu!
 		GRS.mu[i] = (i+0.5)*dmu;
 	}
+	printf("%le %le %le %le %le %le %le\n",cosmology.Omega_m,cosmology.sigma_8,cosmology.n_spec,cosmology.w0,cosmology.wa,cosmology.omb,cosmology.h0);
 	set_data_GRS(GRS.k,GRS.mu,GRS.datav);
 	set_variance_GRS(GRS.k,GRS.mu, dk, dmu, GRS.var);
 	like.GRS = 1;
 	printf("GRS initalized\n");
 	if (BAO_flag==1) {
-		init_BAO_WFIRST_spectro();
+		init_BAO_WFIRST_spectro(); // see BAO.c for implementation
 		like.BAO=1;
 	}
 }
@@ -449,19 +472,22 @@ double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, doubl
   } 
 
   log_L_prior=0.0;
-  // add Gaussian prior on SIGMAZ
-  log_L_prior -= 0.5*pow((SIGMAZ-1.e-3)/1.e-4,2.);
+  //add Gaussian prior on SIGMAZ
+  //log_L_prior -= 0.5*pow((SIGMAZ-1.e-3)/1.e-4,2.);
   // add Gaussian prior on k_star
-  log_L_prior -= 0.5*pow((KSTAR-0.24)/0.024,2.);
+  //log_L_prior -= 0.5*pow((KSTAR-0.24)/0.024,2.);
   
-  double GRS_gal_bias_fid[7]={1.2,1.3,1.45,1.6,1.70,1.8,1.9};
-  for (i = 0; i < GRS.N_z; i++){
-	 log_L_prior -= 0.5*pow((GRS_gal.b_g[i]-GRS_gal_bias_fid[i])/0.1,2.);  
-  }
-
-  if(like.BAO==1) log_L_prior += log_L_BAO(); //log_L_BAO is neg
+  // for (i = 0; i < GRS.N_z; i++){
+	 // log_L_prior -= 0.5*pow((GRS_gal.b_g[i]-GRS_gal.b_g_fid[i])/0.1,2.);  
+  // }
+  // for (i = 0; i < GRS.N_z; i++){
+	 // log_L_prior -= 0.5*pow((GRS_gal.sigma_p[i]-GRS_gal.sigma_p_fid[i])/GRS_gal.sigma_p_fid_sigma,2.);  
+  // }
+  //if(like.BAO==1) log_L_prior += log_L_BAO(); //log_L_BAO is neg
   set_data_GRS(GRS.k,GRS.mu,pred);
 
+  //log_L_prior+=log_L_Planck18_BAO_w0wa();//CH
+  
   chisqr=0.0;
   for (i=0; i<GRS.N_z*GRS.N_k*GRS.N_mu; i++){
 //  	printf("%i %e %e\n",i,pred[i],GRS.datav[i]);
@@ -477,6 +503,13 @@ double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, doubl
   return -0.5*chisqr+log_L_prior;
 }
 
+double log_like_wrapper(input_cosmo_params ic, input_nuisance_params in)
+{
+  double like = log_like_GRS(ic.omega_m, ic.sigma_8, ic.n_s, ic.w0, ic.wa, ic.omega_b, ic.h0, ic.MGSigma, ic.MGmu,
+    in.bias[0], in.bias[1], in.bias[2], in.bias[3],in.bias[4], in.bias[5], in.bias[6], in.sigmap[0], in.sigmap[1], in.sigmap[2], in.sigmap[3], in.sigmap[4], in.sigmap[5], in.sigmap[6],in.sigmaz, in.pshot, in.kstar);
+  
+  return like;
+}
 
 // int main(void){
 // 	init(1);

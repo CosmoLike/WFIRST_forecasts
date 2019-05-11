@@ -1,9 +1,9 @@
 #!/bin/bash
 #PBS -S /bin/bash
 #PBS -V
-#PBS -W group_list=cosmo
-#PBS -q high_pri
-#PBS -J 1-7740
+#PBS -W group_list=cosmolike
+#PBS -q standard
+#PBS -J 1-8365
 #PBS -l select=1:ncpus=1:mem=1GB
 #PBS -l place=free:shared
 #PBS -l walltime=8:00:00

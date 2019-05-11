@@ -33,12 +33,15 @@
 #include "../cosmolike_core/theory/redshift_spline.c"
 #include "../cosmolike_core/theory/halo.c"
 #include "../cosmolike_core/theory/HOD.c"
+#include "../cosmolike_core/theory/pt.c"
 #include "../cosmolike_core/theory/cosmo2D_fourier.c"
 #include "../cosmolike_core/theory/IA.c"
 #include "../cosmolike_core/theory/cluster.c"
 #include "../cosmolike_core/theory/BAO.c"
 #include "../cosmolike_core/theory/external_prior.c"
+#include "../cosmolike_core/theory/GRS.c"
 #include "init_WFIRST_forecasts.c"
+#include "like_grs.c"
 
 double C_shear_tomo_sys(double ell,int z1,int z2);
 double C_cgl_tomo_sys(double ell_Cluster,int zl,int nN, int zs);
@@ -299,7 +302,7 @@ int set_nuisance_cluster_Mobs(double cluster_Mobs_lgN0,  double cluster_Mobs_alp
   nuisance.cluster_Mobs_alpha = cluster_Mobs_alpha; //fiducial: 0.993, flat prior [0.0, 2.0]
   nuisance.cluster_Mobs_beta = cluster_Mobs_beta; //fiducial: 0.0, flat prior [-1.5, 1.5]
   nuisance.cluster_Mobs_sigma0 = cluster_Mobs_sigma0; //fiducial: 0.456, flat prior [0.0, 1.5]
-  nuisance.cluster_Mobs_sigma_qm = cluster_Mobs_sigma_qm; //fiducial: -0.169, flat prior [-1.5, 1.5]
+  nuisance.cluster_Mobs_sigma_qm = cluster_Mobs_sigma_qm; //fiducial: 0.0, flat prior [-1.5, 1.5]
   nuisance.cluster_Mobs_sigma_qz = cluster_Mobs_sigma_qz; //fiducial: 0.0, flat prior [-1.5, 1.5]
 
   if (nuisance.cluster_Mobs_lgN0 < 0.5 || nuisance.cluster_Mobs_lgN0 > 5.0) return 0;
@@ -334,6 +337,22 @@ int set_nuisance_gbias(double B1, double B2, double B3, double B4,double B5, dou
   return 1;
 } 
 
+double log_L_clusterMobs_WFIRST()
+{
+  double log_L = 0.; 
+  int i;
+      
+  log_L -=  pow((nuisance.cluster_Mobs_lgN0 - prior.cluster_Mobs_lgM0[0])/ prior.cluster_Mobs_lgM0[1],2.0);
+  log_L -=  pow((nuisance.cluster_Mobs_alpha - prior.cluster_Mobs_alpha[0])/ prior.cluster_Mobs_alpha[1],2.0);
+  log_L -=  pow((nuisance.cluster_Mobs_beta - prior.cluster_Mobs_beta[0])/ prior.cluster_Mobs_beta[1],2.0);
+  log_L -=  pow((nuisance.cluster_Mobs_sigma0 - prior.cluster_Mobs_sigma0[0])/ prior.cluster_Mobs_sigma0[1],2.0);
+  log_L -=  pow((nuisance.cluster_Mobs_sigma_qm - prior.cluster_Mobs_sigma_qm[0])/ prior.cluster_Mobs_sigma_qm[1],2.0);
+  log_L -=  pow((nuisance.cluster_Mobs_sigma_qz - prior.cluster_Mobs_sigma_qz[0])/ prior.cluster_Mobs_sigma_qz[1],2.0);
+  log_L = 0.5*log_L;
+  
+  return log_L;
+}
+
 double log_multi_like(double OMM, double S8, double NS, double W0,double WA, double OMB, double H0, double MGSigma, double MGmu, double B1, double B2, double B3, double B4,double B5, double B6, double B7, double B8, double B9, double B10, double SP1, double SP2, double SP3, double SP4, double SP5, double SP6, double SP7, double SP8, double SP9, double SP10, double SPS1, double CP1, double CP2, double CP3, double CP4, double CP5, double CP6, double CP7, double CP8, double CP9, double CP10, double CPS1, double M1, double M2, double M3, double M4, double M5, double M6, double M7, double M8, double M9, double M10, double A_ia, double beta_ia, double eta_ia, double eta_ia_highz, double LF_alpha, double LF_P, double LF_Q, double LF_red_alpha, double LF_red_P, double LF_red_Q,double mass_obs_norm, double mass_obs_slope, double mass_z_slope, double mass_obs_scatter_norm, double mass_obs_scatter_mass_slope, double mass_obs_scatter_z_slope)
 {
   int i,j,k,m=0,l;
@@ -358,28 +377,28 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
   }
   if (set_cosmology_params(OMM,S8,NS,W0,WA,OMB,H0,MGSigma,MGmu)==0){
     printf("Cosmology out of bounds\n");
-    return -1.0e8;
+    return -1.0e12;
   }
   set_nuisance_shear_calib(M1,M2,M3,M4,M5,M6,M7,M8,M9,M10);
   if (set_nuisance_shear_photoz(SP1,SP2,SP3,SP4,SP5,SP6,SP7,SP8,SP9,SP10,SPS1)==0){
     printf("Shear photo-z sigma too small\n");
-    return -1.0e8;
+    return -1.0e12;
   }
   if (set_nuisance_clustering_photoz(CP1,CP2,CP3,CP4,CP5,CP6,CP7,CP8,CP9,CP10,CPS1)==0){
     printf("Clustering photo-z sigma too small\n");
-    return -1.0e8;
+    return -1.0e12;
   }
   if (set_nuisance_ia(A_ia,beta_ia,eta_ia,eta_ia_highz,LF_alpha,LF_P,LF_Q,LF_red_alpha,LF_red_P,LF_red_Q)==0){
     printf("IA parameters out of bounds\n");
-    return -1.0e8; 
+    return -1.0e12; 
   }
   if (set_nuisance_gbias(B1,B2,B3,B4,B5,B6,B7,B8,B9,B10)==0){
     printf("Bias out of bounds\n");
-    return -1.0e8;
+    return -1.0e12;
   }
   if (set_nuisance_cluster_Mobs(mass_obs_norm, mass_obs_slope, mass_z_slope, mass_obs_scatter_norm, mass_obs_scatter_mass_slope, mass_obs_scatter_z_slope)==0){
     printf("Mobs out of bounds\n");
-    return -1.0e8;
+    return -1.0e12;
   }
        
   //printf("like %le %le %le %le %le %le %le %le\n",cosmology.Omega_m, cosmology.Omega_v,cosmology.sigma_8,cosmology.n_spec,cosmology.w0,cosmology.wa,cosmology.omb,cosmology.h0); 
@@ -400,7 +419,7 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
   if(like.wlphotoz!=0) log_L_prior+=log_L_wlphotoz();
   if(like.clphotoz!=0) log_L_prior+=log_L_clphotoz();
   if(like.shearcalib==1) log_L_prior+=log_L_shear_calib();
-  // if(like.clusterMobs==1) log_L_prior+=log_L_clusterMobs();
+  //if(like.clusterMobs==1) log_L_prior+=log_L_clusterMobs_WFIRST();
  
   //printf("%d %d %d %d\n",like.BAO,like.wlphotoz,like.clphotoz,like.shearcalib);
   // printf("logl %le %le %le %le\n",log_L_shear_calib(),log_L_wlphotoz(),log_L_clphotoz(),log_L_clusterMobs());
@@ -443,7 +462,7 @@ double log_multi_like(double OMM, double S8, double NS, double W0,double WA, dou
   //   printf("like_grs activated!\n");
   //   log_L_GRS = log_like_GRS(cosmology.Omega_m, cosmology.sigma_8, cosmology.n_spec, cosmology.w0,cosmology.wa, cosmology.omb, cosmology.h0,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.,-42.);
   // }
-//  printf("%le\n",chisqr);
+ printf("%le\n",chisqr);
 //  return -0.5*chisqr+log_L_prior+log_L_GRS;
   return -0.5*chisqr+log_L_prior;
 }
@@ -518,11 +537,7 @@ void compute_data_vector(char *details, double OMM, double S8, double NS, double
   }
   fclose(F);
 }
-<<<<<<< HEAD
 
-
-=======
->>>>>>> master
 void write_vector_wrapper(char *details, input_cosmo_params ic, input_nuisance_params in)
 {
   compute_data_vector(details, ic.omega_m, ic.sigma_8, ic.n_s, ic.w0, ic.wa, ic.omega_b, ic.h0, ic.MGSigma, ic.MGmu,
@@ -569,7 +584,7 @@ void save_zdistr_sources(int zs){
   
    FILE *F1;
    char filename[300];
-   sprintf(filename,"zdistris/zdist_sources_bin%d.txt",zs);
+   sprintf(filename,"zdistris/pessi_zdist_sources_bin%d.txt",zs);
    F1 = fopen(filename,"w");
    for (z =redshift.shear_zdistrpar_zmin; z< redshift.shear_zdistrpar_zmax; z+= dz){
       fprintf(F1,"%e %e\n", z, zdistr_photoz(z,zs));
@@ -583,7 +598,7 @@ void save_zdistr_lenses(int zl){
    
    FILE *F1;
    char filename[300];
-   sprintf(filename,"zdistris/zdist_lenses_bin%d.txt", zl);
+   sprintf(filename,"zdistris/pessi_zdist_lenses_bin%d.txt", zl);
    F1 = fopen(filename,"w");
    for (z =redshift.clustering_zdistrpar_zmin; z< redshift.clustering_zdistrpar_zmax; z+= dz){
       fprintf(F1,"%e %e\n", z, pf_photoz(z,zl));
@@ -594,7 +609,7 @@ void save_zdistr_lenses(int zl){
  int main(void)
 {
   clock_t begin, end;
-  double time_spent;
+  double time_spent,loglike=0.0;
   int i;
 /* here, do your time-consuming job */
 
@@ -609,16 +624,16 @@ void save_zdistr_lenses(int zl){
   //init_priors("none","none","PhotoBAO","none");
    
   //init_probes("clusterWL");
-  init_probes("all_2pt");
+  init_probes("3x2pt_clusterN_clusterWL");
   //init_Pdelta("emu",0.8,0.35);
   // init_Pdelta("linear",0.8,0.35);
 
-  for (i =0; i< 10; i++){
-    save_zdistr_sources(i);
-  }
-  for (i =0; i< 10; i++){
-    save_zdistr_lenses(i);
-  }
+  // for (i =0; i< 10; i++){
+  //   save_zdistr_sources(i);
+  // }
+  // for (i =0; i< 10; i++){
+  //   save_zdistr_lenses(i);
+  // }
 //   double Omega;
 //   char filename[300];
 // for (i=0;i<200; i++){
@@ -626,15 +641,17 @@ void save_zdistr_lenses(int zl){
 //   sprintf(filename,"test_fid_%d", i);
 //compute_data_vector(filename,Omega,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
 // }
-// compute_data_vector("fid_opti",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
+// compute_data_vector("fid_pessi",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
+compute_data_vector("fid_opti_test",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
 // compute_data_vector("mu1_Sigma0",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,1.,1.35,1.5,1.65,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9);
   // compute_data_vector("mu1_Sigma1",0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,1.,1.,1.35,1.5,1.65,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.72+log(1.e+14*0.7),1.08,0.0,0.25,0.9,0.9,0.9,0.9);
 
-  // init_data_inv("cov/WFIRST_3x2pt_clusterN_clusterWL_inv","datav/WFIRST_all_2pt_clusterN_clusterWL_fid");
+  // init_data_inv("cov/WFIRST_3x2pt_inv","datav/WFIRST_all_2pt_fid_opti");
   
 
   // begin = clock();
-  // log_multi_like(0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
+  // loglike=log_multi_like(0.3156,0.831,0.9645,-1.,0.,0.0491685,0.6727,0.,0.,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-0.0005,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,5.92,1.1,-0.47,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.207,0.993,0.0,0.456,0.0,0.0);
+  // printf("%le\n",loglike);
   // // printf("knonlin %le\n",nonlinear_scale_computation(1.0));
   // // printf("knonlin %le\n",nonlinear_scale_computation(0.5));
   // end = clock();

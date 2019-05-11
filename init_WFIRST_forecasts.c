@@ -12,7 +12,7 @@ void init_probes(char *probes);
 void set_galaxies_source();
 void set_galaxies_SN10();
 void set_galaxies_redmagic();
-void set_clusters_LSST(); //set parameters for LSST/WFIRST forecasts
+void set_clusters_WFIRST(); //set parameters for LSST/WFIRST forecasts
 void init_lens_sample(char *lensphotoz, char *galsample);
 void init_source_sample(char *sourcephotoz);
 
@@ -167,6 +167,7 @@ void init_priors(char *cosmoPrior1, char *cosmoPrior2, char *cosmoPrior3, char *
   if(strcmp(cosmoPrior2,"shear_pessi")==0){
     set_shear_priors_WFIRST_pessi();
   }
+  if(strcmp(cosmoPrior3,"Photo_BAO")==0) like.BAO=1;  
   if(strcmp(cosmoPrior4,"Planck15_BAO_w0wa")==0) like.Planck15_BAO_w0wa=1;  
   if(strcmp(cosmoPrior4,"Planck15_BAO_H070p6_JLA_w0wa")==0) like.Planck15_BAO_H070p6_JLA_w0wa=1; 
 }
@@ -212,10 +213,27 @@ void init_clusters()
   printf("Initializing clusters\n");
   printf("-----------------------------------\n");
 
-  if (strcmp(survey.name,"LSST")==0 || strcmp(survey.name,"WFIRST")==0 || strcmp(survey.name,"HSC")==0) set_clusters_LSST();
-  if (strcmp(survey.name,"Euclid")==0 || strcmp(survey.name,"DES")==0) {printf("Not in this init! Exit! \n"); exit(1);}
+  set_clusters_WFIRST();
+  // prior.cluster_Mobs_lgM0[0]=nuisance.cluster_Mobs_lgN0;
+  // prior.cluster_Mobs_lgM0[1]=
 
- set_clusterMobs_priors(); 
+  // prior.cluster_Mobs_alpha[0]=nuisance.cluster_Mobs_alpha;
+  // prior.cluster_Mobs_alpha[1]
+
+  // prior.cluster_Mobs_beta[0]=nuisance.cluster_Mobs_beta;
+  // prior.cluster_Mobs_beta[1]
+
+  prior.cluster_Mobs_sigma0[0]=nuisance.cluster_Mobs_sigma0;
+  prior.cluster_Mobs_sigma0[1]=0.045;
+  
+  prior.cluster_Mobs_sigma_qm[0]=nuisance.cluster_Mobs_sigma_qm;
+  prior.cluster_Mobs_sigma_qm[1]=0.03;
+  
+  prior.cluster_Mobs_sigma_qz[0]=nuisance.cluster_Mobs_sigma_qz; 
+  prior.cluster_Mobs_sigma_qz[1]=0.1;
+
+  like.clusterMobs=1;
+
 }
 
 
@@ -247,7 +265,7 @@ void init_probes(char *probes)
     printf("Cluster Number Counts computation initialized\n");
     printf("Cluster weak lensing computation initialized\n");
   }
-  if(strcmp(probes,"all_2pt_clusterN")==0){
+  if(strcmp(probes,"3x2pt_clusterN")==0){
     like.Ndata=like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra)+tomo.cluster_Nbin*Cluster.N200_Nbin;
     like.shear_shear=1;
     like.shear_pos=1;
@@ -276,7 +294,7 @@ void init_probes(char *probes)
     printf("Shear-Position computation initialized\n");
     printf("Position-Position computation initialized\n");
   }
-  if(strcmp(probes,"all_2pt")==0){
+  if(strcmp(probes,"3x2pt")==0){
     like.Ndata=like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra);
     like.shear_shear=1;
     like.shear_pos=1;
@@ -285,7 +303,7 @@ void init_probes(char *probes)
     printf("Shear-Position computation initialized\n");
     printf("Position-Position computation initialized\n");
   } 
-  if(strcmp(probes,"all_2pt_clusterN_clusterWL")==0){
+  if(strcmp(probes,"3x2pt_clusterN_clusterWL")==0){
     like.Ndata=like.Ncl*(tomo.shear_Npowerspectra+tomo.ggl_Npowerspectra+tomo.clustering_Npowerspectra)+tomo.cluster_Nbin*Cluster.N200_Nbin+tomo.cgl_Npowerspectra*Cluster.N200_Nbin*Cluster.lbin;
     like.shear_shear=1;
     like.shear_pos=1;
@@ -614,16 +632,16 @@ void set_galaxies_DES_Y1()
 // }
 
 
-void set_clusters_LSST(){
+void set_clusters_WFIRST(){
   int i,j;
   //N200->M relationship from Murata et al. (2018)
   nuisance.cluster_Mobs_lgN0 = 3.207; //fiducial: 3.207, flat prior [0.5, 5.0]
   nuisance.cluster_Mobs_alpha = 0.993; //fiducial: 0.993, flat prior [0.0, 2.0]
   nuisance.cluster_Mobs_beta = 0.0; //fiducial: 0.0, flat prior [-1.5, 1.5]
   nuisance.cluster_Mobs_sigma0 = 0.456; //fiducial: 0.456, flat prior [0.0, 1.5]
-  nuisance.cluster_Mobs_sigma_qm = 0.0; //fiducial: -0.169, flat prior [-1.5, 1.5]
+  nuisance.cluster_Mobs_sigma_qm = 0.0; //fiducial: 0.0, flat prior [-1.5, 1.5]
   nuisance.cluster_Mobs_sigma_qz = 0.0; //fiducial: 0.0, flat prior [-1.5, 1.5]
-  //Compliteness parameters are not marinilized, but just fixed to 1.
+  //Compliteness parameters are not marginalized, but just fixed to 1.
   nuisance.cluster_completeness[0] = 1.0;
   nuisance.cluster_completeness[1] = 1.0;
   nuisance.cluster_completeness[2] = 1.0;
@@ -666,7 +684,7 @@ void set_clusters_LSST(){
  for (i = 0; i < Cluster.N200_Nbin; i++){
     printf ("Richness bin %d: %e - %e, N(z = 0.3) = %e, N(z = 0.7) = %e\n", i,Cluster.N_min[i],Cluster.N_max[i],N_N200(0,i),N_N200(2,i));
   }
-  printf("Clusters set to LSST Y10\n");
+  printf("Clusters set to WFIRST\n");
   printf("Clusters cgl_Npowerspectra=%d\n",tomo.cgl_Npowerspectra);
 }
 
@@ -714,8 +732,8 @@ void set_wlphotoz_WFIRST_opti()
     prior.bias_zphot_shear[i][0]=nuisance.bias_zphot_shear[i];
     prior.sigma_zphot_shear[i][0]=nuisance.sigma_zphot_shear[i];
     // rms width of Gaussian priors
-    prior.bias_zphot_shear[i][1] = 0.001;
-    prior.sigma_zphot_shear[i][1]= 0.001;
+    prior.bias_zphot_shear[i][1] = 0.002;
+    prior.sigma_zphot_shear[i][1]= 0.002;
     printf("Mean (of mean)=%le, Sigma (of mean)=%le\n",prior.bias_zphot_shear[i][0],prior.bias_zphot_shear[i][1]);
     printf("Mean (of sigma)=%le, Sigma (of sigma)=%le\n",prior.sigma_zphot_shear[i][0],prior.sigma_zphot_shear[i][1]); 
   }
@@ -761,8 +779,8 @@ void set_clphotoz_WFIRST_opti()
     prior.bias_zphot_clustering[i][0]=nuisance.bias_zphot_clustering[i];
     prior.sigma_zphot_clustering[i][0]=nuisance.sigma_zphot_clustering[i];
     // rms width of Gaussian priors
-    prior.bias_zphot_clustering[i][1] = 0.001;
-    prior.sigma_zphot_clustering[i][1]= 0.001;
+    prior.bias_zphot_clustering[i][1] = 0.002;
+    prior.sigma_zphot_clustering[i][1]= 0.002;
     printf("Mean (of mean)=%le, Sigma (of mean)=%le\n",prior.bias_zphot_clustering[i][0],prior.bias_zphot_clustering[i][1]);
     printf("Mean (of sigma)=%le, Sigma (of sigma)=%le\n",prior.sigma_zphot_clustering[i][0],prior.sigma_zphot_clustering[i][1]); 
   }
