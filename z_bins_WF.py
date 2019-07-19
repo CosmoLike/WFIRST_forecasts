@@ -34,7 +34,7 @@ nz=nz/norm
 fig=plt.figure(1)
 ax=fig.add_subplot(111)
 
-ax.plot(z, nz, 'blue', lw=2, label=r'1 tomo bin, true redshift distribution, COSMOS based')
+ax.plot(z, nz, 'blue', lw=2, label=r'Clustering Sample')
 
 
 # ###########################################################
@@ -50,7 +50,7 @@ for iS in range(Ns):
    #print "normalized to", np.trapz(nz,z)
    
    ax.fill_between(z, 0, nz*clusteringdensity/10., facecolor=plt.cm.winter(1.*iS/Ns), edgecolor='', alpha=0.8)
-ax.plot([], [], color=plt.cm.winter(0.), lw=2, alpha=0.7, label=r'10 tomo bins, Gaussian photo-z, clustering, optimistic')
+ax.plot([], [], color=plt.cm.winter(0.), lw=2, alpha=0.7)
 
 # ###########################################################
 
@@ -88,7 +88,7 @@ nz=nz/norm
 fig=plt.figure(1)
 ax=fig.add_subplot(111)
 
-ax.plot(z, nz, 'RED', lw=2, label=r'1 tomo bin, true redshift distribution, COSMOS based')
+ax.plot(z, nz, 'RED', lw=2, label=r'Weak Lensing Sample')
 
 
 #  source bins
@@ -101,7 +101,7 @@ for ig in range(Ng):
    #print "normalized to", np.trapz(nz,z)
 
    ax.fill_between(z, 0., nz*lensingdensity/10., facecolor=plt.cm.autumn(1.*ig/Ng), edgecolor='', alpha=0.7)
-ax.plot([], [], color=plt.cm.autumn(0.), lw=2, alpha=0.7, label=r'10 tomo bins, Gaussian photo-z, lensing, optimistic')
+ax.plot([], [], color=plt.cm.autumn(0.), lw=2, alpha=0.7)
 
 # ###########################################################
 # # lensing efficiency

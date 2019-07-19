@@ -22,6 +22,9 @@
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_sf_expint.h>
 #include <gsl/gsl_deriv.h>
+#include <gsl/gsl_interp2d.h>
+#include <gsl/gsl_spline2d.h>
+
 
 #include "../cosmolike_core/theory/basics.c"
 #include "../cosmolike_core/theory/structs.c"

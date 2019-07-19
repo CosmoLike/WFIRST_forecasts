@@ -104,7 +104,8 @@ void init_cosmo_runmode(char *runmode)
   printf("Initializing Standard Runmode/Cosmology\n");
   printf("-------------------------------------------\n");
   set_cosmological_parameters_to_Planck_15_TT_TE_EE_lowP();
-  //set_cosmological_parameters_to_Joe();
+  set_prior_cosmology(); // if external data sets are included, this routine centers the external data set on top of the fiducial model for the simulated analysis.
+
   sprintf(pdeltaparams.runmode,"%s",runmode);
   printf("pdeltaparams.runmode =%s\n",pdeltaparams.runmode);
 }
@@ -144,32 +145,29 @@ void init_binning_fourier(int Ncl, double lmin, double lmax, double lmax_shear, 
 }
 
 
-void init_priors(char *cosmoPrior1, char *cosmoPrior2, char *cosmoPrior3, char *cosmoPrior4)
+void init_priors(char *Prior1, char *Prior2, char *Prior3, char *Prior4)
 {
   printf("\n");
   printf("---------------------------------------\n");
   printf("Initializing priors for marginalization\n");
   printf("---------------------------------------\n");
-  
-  like.Planck=like.BAO=like.Aubourg_Planck_BAO_SN=like.SN=0;
-  
-  if(strcmp(cosmoPrior1,"photo_opti")==0){
+    
+  if(strcmp(Prior1,"photo_opti")==0){
     set_wlphotoz_WFIRST_opti();
     set_clphotoz_WFIRST_opti();
   }
-  if(strcmp(cosmoPrior1,"photo_pessi")==0){
+  if(strcmp(Prior1,"photo_pessi")==0){
     set_wlphotoz_WFIRST_pessi();
     set_clphotoz_WFIRST_pessi();
   }
-  if(strcmp(cosmoPrior2,"shear_opti")==0){
+  if(strcmp(Prior2,"shear_opti")==0){
     set_shear_priors_WFIRST_opti();
   }
-  if(strcmp(cosmoPrior2,"shear_pessi")==0){
+  if(strcmp(Prior2,"shear_pessi")==0){
     set_shear_priors_WFIRST_pessi();
   }
-  if(strcmp(cosmoPrior3,"Photo_BAO")==0) like.BAO=1;  
-  if(strcmp(cosmoPrior4,"Planck15_BAO_w0wa")==0) like.Planck15_BAO_w0wa=1;  
-  if(strcmp(cosmoPrior4,"Planck15_BAO_H070p6_JLA_w0wa")==0) like.Planck15_BAO_H070p6_JLA_w0wa=1; 
+  if(strcmp(Prior3,"GRS")==0) like.GRS=1;
+  sprintf(like.ext_data,"%s",Prior4);
 }
 
 
@@ -214,14 +212,14 @@ void init_clusters()
   printf("-----------------------------------\n");
 
   set_clusters_WFIRST();
-  // prior.cluster_Mobs_lgM0[0]=nuisance.cluster_Mobs_lgN0;
-  // prior.cluster_Mobs_lgM0[1]=
+  prior.cluster_Mobs_lgM0[0]=nuisance.cluster_Mobs_lgN0;
+  prior.cluster_Mobs_lgM0[1]=0.045;
 
-  // prior.cluster_Mobs_alpha[0]=nuisance.cluster_Mobs_alpha;
-  // prior.cluster_Mobs_alpha[1]
+  prior.cluster_Mobs_alpha[0]=nuisance.cluster_Mobs_alpha;
+  prior.cluster_Mobs_alpha[1]=0.045;
 
-  // prior.cluster_Mobs_beta[0]=nuisance.cluster_Mobs_beta;
-  // prior.cluster_Mobs_beta[1]
+  prior.cluster_Mobs_beta[0]=nuisance.cluster_Mobs_beta;
+  prior.cluster_Mobs_beta[1]=0.3;
 
   prior.cluster_Mobs_sigma0[0]=nuisance.cluster_Mobs_sigma0;
   prior.cluster_Mobs_sigma0[1]=0.045;

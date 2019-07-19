@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-# sys.path.append('/home/u17/timeifler/WFIRST_forecasts')
-# sys.path.append('/Users/timeifler/WFIRST_forecasts')
+sys.path.append('/home/u17/timeifler/WFIRST_forecasts')
 
 from cosmolike_libs_pessi import * 
 from schwimmbad import MPIPool
@@ -11,7 +10,7 @@ file_source_z = os.path.join(dirname, "zdistris/zdistri_WFIRST_LSST_lensing_fine
 file_lens_z = os.path.join(dirname, "zdistris/zdistri_WFIRST_LSST_clustering_fine_bin")
 data_file = os.path.join(dirname, "datav/WFIRST_3x2pt_fid_pessi")
 cov_file = os.path.join(dirname, "cov/WFIRST_3x2pt_inv")
-chain_file = os.path.join(dirname, "like/like_WFIRST_3x2pt_sys_pessi")
+chain_file = "/extra/timeifler/WFIRST_forecasts/chains/like_WFIRST_3x2pt_sys_pessi"
 
 initcosmo("halofit")
 initbins(25,30.0,15000.0,4000.0,21.0,10,10)

@@ -1,0 +1,42 @@
+GRS Chris nuisance 					2.8	M 			7+16 dim
+WF SN Vivian						1.0 M 			4 dim+nuisance through Fisher
+
+3x2 nosys opti						560k			7 dim
+3x2 nosys pessi						560k			7 dim
+3x2 sys opti						4.83M			7+42 dim
+3x2 sys pessi						4.42M			7+42 dim
+3x2 photo opti						5.6	M 			7+32 dim
+3x2 photo pessi						5.6	M 			7+32 dim
+3x2 shear opti						4.83M			7+20 dim
+3x2 shear pessi						3.07M 			7+20 dim
+
+3x2 sys opti MG						2.84M			9+42 dim
+3x2 sys pessi MG					2.83M			9+42 dim
+
+shear-shear opti					2.8	M 			7+21 dim
+shear-shear pessi					2.8	M 			7+21 dim
+
+clustering opti 					2.8 M 			7+21 dim
+clustering pessi					2.8 M 			7+21 dim
+
+clusterN_clusterWL opti	std MOR		2.12k			7+27 dim
+clusterN_clusterWL opti	flat MOR	782k			7+27 dim
+clusterN_clusterWL opti opti MOR	 - 				7+27 dim
+clusterN_clusterWL opti pessi MOR 	 - 				7+27 dim
+
+clusterN_clusterWL opti fix MOR		 - 				7+21 dim
+
+clusterN_clusterWL pessi			470k			7+27 dim
+
+3x2_clusterN_clusterWL opti			4.18M			7+48 dim
+3x2_clusterN_clusterWL pessi		1.12M			7.48 dim
+
+LSST+WFIRST 3x2 sys opti			WF 3x2 opti scaled to 18,0000 deg^2
+LSST only 3x2 sys SRD				needs to be checked, "obssys" settings consistent with SRD
+WFIRST 3x2 opti						exists, see above
+
+
+todos:
+- Vivian, write paragraph on SN 
+- Chris write paragraph on GRS settings
+- Tim, write rest, make plots, run remaiing chains

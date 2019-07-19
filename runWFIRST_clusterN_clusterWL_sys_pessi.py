@@ -9,9 +9,10 @@ from schwimmbad import MPIPool
 
 file_source_z = os.path.join(dirname, "zdistris/zdistri_WFIRST_LSST_lensing_fine_bin")
 file_lens_z = os.path.join(dirname, "zdistris/zdistri_WFIRST_LSST_clustering_fine_bin")
-data_file = os.path.join(dirname, "datav/WFIRST_clusterN_clusterWL_fid_pessi")
+data_file = os.path.join(dirname, "datav/WFIRST_clusterN_clusterWL_pessi")
 cov_file = os.path.join(dirname, "cov/WFIRST_clusterN_clusterWL_inv")
-chain_file = os.path.join(dirname, "like/like_WFIRST_clusterN_clusterWL_sys_pessi")
+chain_file = "/extra/timeifler/WFIRST_forecasts/chains/like_WFIRST_clusterN_clusterWL_sys_pessi"
+#chain_file = "like/like_WFIRST_clusterN_clusterWL_sys_pessi"
 
 initcosmo("halofit")
 initbins(25,30.0,15000.0,4000.0,21.0,10,10)
@@ -35,5 +36,5 @@ initdatainv(cov_file ,data_file)
 #sample_params = sample_cosmology_2pt_cluster_nuisance(get_N_tomo_shear(),get_N_tomo_clustering())
 sample_params = sample_cosmology_clusterN_clusterWL_nuisance(get_N_tomo_shear()) 
 
-sample_main(sample_params,2000,560,1,chain_file, blind=False, pool=MPIPool())
+sample_main(sample_params,2700,1120,1,chain_file, blind=False, pool=MPIPool())
 

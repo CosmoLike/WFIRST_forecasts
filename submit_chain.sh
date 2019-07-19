@@ -1,0 +1,17 @@
+# qsub run_mpi_WFIRST_3x2pt_photosys_opti.sh 
+# qsub run_mpi_WFIRST_3x2pt_photosys_pessi.sh
+
+qsub run_mpi_WFIRST_3x2pt_shearsys_opti.sh
+qsub run_mpi_WFIRST_3x2pt_shearsys_pessi.sh
+
+Running - qsub run_mpi_WFIRST_3x2pt_sys_opti.sh
+qsub run_mpi_WFIRST_3x2pt_sys_pessi.sh
+
+qsub run_mpi_WFIRST_3x2pt_nosys_opti.sh
+qsub run_mpi_WFIRST_3x2pt_nosys_pessi.sh
+
+qsub run_mpi_WFIRST_3x2pt_sys_opti_MG.sh
+qsub run_mpi_WFIRST_3x2pt_sys_pessi_MG.sh
+
+Running - qsub run_mpi_WFIRST_3x2pt_clusterN_clusterWL_sys_opti.sh
+Running - qsub run_mpi_WFIRST_3x2pt_clusterN_clusterWL_sys_opti_GRS.sh

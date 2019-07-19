@@ -11,7 +11,7 @@ file_source_z = os.path.join(dirname, "zdistris/zdistri_WFIRST_LSST_lensing_fine
 file_lens_z = os.path.join(dirname, "zdistris/zdistri_WFIRST_LSST_clustering_fine_bin")
 data_file = os.path.join(dirname, "datav/WFIRST_3x2pt_clusterN_clusterWL_fid_opti")
 cov_file = os.path.join(dirname, "cov/WFIRST_3x2pt_clusterN_clusterWL_inv")
-chain_file = os.path.join(dirname, "like/like_WFIRST_3x2pt_clusterN_clusterWL_nosys_opti_GRS")
+chain_file = "/extra/timeifler/WFIRST_forecasts/chains/like_WFIRST_3x2pt_clusterN_clusterWL_nosys_opti_GRS"
 
 initcosmo("halofit")
 initbins(25,30.0,15000.0,4000.0,21.0,10,10)
@@ -21,7 +21,7 @@ initgalaxies(file_source_z,file_lens_z,"gaussian","gaussian","SN10")
 initclusters()
 initia("none","none")
 
-init(n_trade, 1)
+init_GRS(n_trade, 0)
 
 # test also with
 #initpriors("none","none","none","Planck")

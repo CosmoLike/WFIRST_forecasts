@@ -261,17 +261,22 @@ class InputNuisanceParams(IterableStruct):
         c = cls()
         c.bias[:] = np.repeat(0.15, 10)
         c.source_z_bias[:] = np.repeat(0.005, 10)
-        c.source_z_s = 0.01
+        c.source_z_s = 0.002
         c.lens_z_bias[:] = np.repeat(0.005, 10)
-        c.lens_z_s = 0.01
+        c.lens_z_s = 0.002
         c.shear_m[:] = np.repeat(0.005, 10)
         c.A_ia = 0.05
         c.beta_ia = 0.01
         c.eta_ia = 0.01
         c.eta_ia_highz = 0.01
         c.lf[:] = np.repeat(0.005, 6)
-        c.m_lambda[:] = [0.05, 0.01, 0.01, 0.01, 0.01, 0.01]
-        return c
+        c.m_lambda[:] = [0.09, 0.09, 0.6, 0.09, 0.06, 0.2]
+        c.grsbias[:] = np.repeat(0.15, 7)
+        c.grssigmap[:] = np.repeat(20.0, 7)
+        c.grssigmaz = 0.0002 # fid is 0.001 and can't be neg
+        c.grspshot = 0.001 #fid is zero
+        c.grskstar = 0.05 # fid is 0.24
+        return c        
 
 
 class LikelihoodFunctionWrapper(object):
@@ -358,6 +363,13 @@ def sample_cosmology_shear_nuisance(tomo_N_shear,MG = False):
     varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
     return varied_parameters
 
+def sample_cosmology_clustering_nuisance(tomo_N_lens,MG = False):
+    varied_parameters = sample_cosmology_only(MG)
+    varied_parameters += ['bias_%d'%i for i in xrange(tomo_N_lens)]
+    varied_parameters += ['lens_z_bias_%d'%i for i in xrange(tomo_N_lens)]
+    varied_parameters.append('lens_z_s')
+    return varied_parameters
+
 def sample_cosmology_2pt_nuisance(tomo_N_shear,tomo_N_lens,MG = False):
     varied_parameters = sample_cosmology_only(MG)
     varied_parameters += ['bias_%d'%i for i in xrange(tomo_N_lens)]
@@ -431,6 +443,23 @@ def sample_cosmology_clusterN_clusterWL_nuisance_fixMOR(tomo_N_shear,MG = False)
     return varied_parameters
 
 
+def sample_cosmology_2pt_cluster_nuisance_GRS(tomo_N_shear,tomo_N_lens,MG = False):
+    if MG:
+        print "sample_cosmology_2pt_cluster_nuisance: MG = True not yet supported for clusters"
+        os.exit()
+    varied_parameters = sample_cosmology_only(MG)
+    varied_parameters += ['bias_%d'%i for i in xrange(tomo_N_lens)]
+    varied_parameters += ['source_z_bias_%d'%i for i in xrange(tomo_N_shear)]
+    varied_parameters.append('source_z_s')
+    varied_parameters += ['lens_z_bias_%d'%i for i in xrange(tomo_N_lens)]
+    varied_parameters.append('lens_z_s')
+    varied_parameters += ['shear_m_%d'%i for i in xrange(tomo_N_shear)]
+    varied_parameters += ['m_lambda_%d'%i for i in xrange(6)]
+    varied_parameters += ['grsbias_%d'%i for i in xrange(7)]
+    varied_parameters += ['grssigmap_%d'%i for i in xrange(7)]
+    varied_parameters.append("grssigmaz")
+    varied_parameters.append("grskstar")
+    return varied_parameters
 
 
 def sample_main(varied_parameters, iterations, nwalker, nthreads, filename, blind=False, pool=None):
@@ -478,6 +507,7 @@ def sample_main(varied_parameters, iterations, nwalker, nthreads, filename, blin
         f.flush()
     f.close()
     
+    pool.close()
 
     # for (p, loglike, state) in sampler.sample(p0,iterations=iterations):
     #     for row in p:
