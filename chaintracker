@@ -19,7 +19,7 @@ shear-shear pessi					2.8	M 			7+21 dim
 clustering opti 					2.8 M 			7+21 dim
 clustering pessi					2.8 M 			7+21 dim
 
-clusterN_clusterWL opti	std MOR		2.12k			7+27 dim
+clusterN_clusterWL opti	std MOR		2.12M			7+27 dim
 clusterN_clusterWL opti	flat MOR	782k			7+27 dim
 clusterN_clusterWL opti opti MOR	 - 				7+27 dim
 clusterN_clusterWL opti pessi MOR 	 - 				7+27 dim

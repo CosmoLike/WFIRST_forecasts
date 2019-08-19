@@ -1,5 +1,5 @@
 
-void init_GRS();
+void init_GRS_WFIRST_Chris();
 
 double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, double OMB, double H0, double MGSIGMA, double MGMU, double B1, double B2, double B3, double B4, double B5, double B6, double B7, double SIGMAP1, double SIGMAP2, double SIGMAP3, double SIGMAP4, double SIGMAP5, double SIGMAP6, double SIGMAP7,double SIGMAZ, double PSHOT, double KSTAR);
 
@@ -32,7 +32,7 @@ void fill_GRS_default_parameters(){
 	// default value from Wang et al. 2013 (p.4)
 	GRS.k_star = 0.24; //in h/Mpc
 	GRS.k_min = 0.001; //in h/Mpc //Wang direct conversation
-	GRS.k_max = 0.3; //in h/Mpc
+	GRS.k_max = 0.25; //in h/Mpc
 }
 
 // void init_GRS_WFIRST_trade1(){
@@ -133,53 +133,53 @@ void fill_GRS_default_parameters(){
 // 	fill_GRS_reference_cosmology();
 // }
 
-void init_GRS_WFIRST_trade3(){
+// void init_GRS_WFIRST_trade3(){
 
-	/*** now redshift bin related quantities***/
-	GRS.N_z = 7;
-	// representative redshift - density weighted over redshift bin
-	GRS.z[0] = 0.73;
-	GRS.z[1] = 1.00;
-	GRS.z[2] = 1.34;
-	GRS.z[3] = 1.65;
-	GRS.z[4] = 1.96;
-	GRS.z[5] = 2.23;
-	GRS.z[6] = 2.49;
-	// comoving survey volume in (Mpc/h)^3 for each redshift bin 
-	GRS.V_z[0] = 2.059e+9;
-	GRS.V_z[1] = 4.157e+9;
-	GRS.V_z[2] = 5.176e+9;
-	GRS.V_z[3] = 4.913e+9;
-	GRS.V_z[4] = 5.142e+9;
-	GRS.V_z[5] = 5.235e+9;
-	GRS.V_z[6] = 2.622e+9;
-	// galaxy parameters
-	// galaxy density in (h/Mpc)^3
-	GRS_gal.n_g[0] = 6.760e-4; 
-	GRS_gal.n_g[1] = 8.166e-4; 
-	GRS_gal.n_g[2] = 4.411e-4; 
-	GRS_gal.n_g[3] = 1.717e-4; 
-	GRS_gal.n_g[4] = 1.143e-5; 
-	GRS_gal.n_g[5] = 2.425e-6; 
-	GRS_gal.n_g[6] = 3.397e-7; 
-	GRS_gal.b_g[0] = 1.19;
-	GRS_gal.b_g[1] = 1.30;
-	GRS_gal.b_g[2] = 1.44;
-	GRS_gal.b_g[3] = 1.56;
-	GRS_gal.b_g[4] = 1.68;
-	GRS_gal.b_g[5] = 1.79;
-	GRS_gal.b_g[6] = 1.90;
-	for (int i = 0; i < GRS.N_z; i++){
-		GRS_gal.b_g_fid[i]=GRS_gal.b_g[i]; //fiducial input values=center for prior calculation
-		GRS_gal.sigma_p[i] = 290.0; // in km/s
-		GRS_gal.sigma_p_fid[i] = 290.0; // in km/s, fiducial input values=center for prior calculation
-		GRS_gal.sigma_z[i] = 1.e-3; // fractional accuracy
-		GRS_gal.P_shot[i] = 0.0; // in (Mpc/h)^3
-	}
-	GRS_gal.sigma_p_fid_sigma = 50.0; // in km/s, sigma for prior calculation
-	fill_GRS_default_parameters();
-	fill_GRS_reference_cosmology();
-}
+// 	/*** now redshift bin related quantities***/
+// 	GRS.N_z = 7;
+// 	// representative redshift - density weighted over redshift bin
+// 	GRS.z[0] = 0.73;
+// 	GRS.z[1] = 1.00;
+// 	GRS.z[2] = 1.34;
+// 	GRS.z[3] = 1.65;
+// 	GRS.z[4] = 1.96;
+// 	GRS.z[5] = 2.23;
+// 	GRS.z[6] = 2.49;
+// 	// comoving survey volume in (Mpc/h)^3 for each redshift bin 
+// 	GRS.V_z[0] = 2.059e+9;
+// 	GRS.V_z[1] = 4.157e+9;
+// 	GRS.V_z[2] = 5.176e+9;
+// 	GRS.V_z[3] = 4.913e+9;
+// 	GRS.V_z[4] = 5.142e+9;
+// 	GRS.V_z[5] = 5.235e+9;
+// 	GRS.V_z[6] = 2.622e+9;
+// 	// galaxy parameters
+// 	// galaxy density in (h/Mpc)^3
+// 	GRS_gal.n_g[0] = 6.760e-4; 
+// 	GRS_gal.n_g[1] = 8.166e-4; 
+// 	GRS_gal.n_g[2] = 4.411e-4; 
+// 	GRS_gal.n_g[3] = 1.717e-4; 
+// 	GRS_gal.n_g[4] = 1.143e-5; 
+// 	GRS_gal.n_g[5] = 2.425e-6; 
+// 	GRS_gal.n_g[6] = 3.397e-7; 
+// 	GRS_gal.b_g[0] = 1.19;
+// 	GRS_gal.b_g[1] = 1.30;
+// 	GRS_gal.b_g[2] = 1.44;
+// 	GRS_gal.b_g[3] = 1.56;
+// 	GRS_gal.b_g[4] = 1.68;
+// 	GRS_gal.b_g[5] = 1.79;
+// 	GRS_gal.b_g[6] = 1.90;
+// 	for (int i = 0; i < GRS.N_z; i++){
+// 		GRS_gal.b_g_fid[i]=GRS_gal.b_g[i]; //fiducial input values=center for prior calculation
+// 		GRS_gal.sigma_p[i] = 290.0; // in km/s
+// 		GRS_gal.sigma_p_fid[i] = 290.0; // in km/s, fiducial input values=center for prior calculation
+// 		GRS_gal.sigma_z[i] = 1.e-3; // fractional accuracy
+// 		GRS_gal.P_shot[i] = 0.0; // in (Mpc/h)^3
+// 	}
+// 	GRS_gal.sigma_p_fid_sigma = 50.0; // in km/s, sigma for prior calculation
+// 	fill_GRS_default_parameters();
+// 	fill_GRS_reference_cosmology();
+// }
 
 // void init_GRS_WFIRST_trade4(){
 
@@ -232,46 +232,47 @@ void init_GRS_WFIRST_trade3(){
 // }
 
 
-void init_GRS_WFIRST_Chris(){
+void init_GRS_WFIRST_Chris()
+{
 
 double fsky=2000.0/41253.0;
 
 	/*** now redshift bin related quantities***/
 	GRS.N_z = 7;
 	// representative redshift - density weighted over redshift bin
-	GRS.z[0] = 0.813677019508416;
-	GRS.z[1] = 1.273735577142336;
-	GRS.z[2] = 1.7480610333810733;
-	GRS.z[3] = 2.2806953339432754;
-	GRS.z[4] = 2.7466285288741448;
-	GRS.z[5] = 3.2661193317422432;
-	GRS.z[6] = 3.715233431276527;
+	GRS.z[0] = 0.8380;
+	GRS.z[1] = 1.2832;
+	GRS.z[2] = 1.7509;
+	GRS.z[3] = 2.2811;
+	GRS.z[4] = 2.7458;
+	GRS.z[5] = 3.2646;
+	GRS.z[6] = 3.7141;
 	// comoving survey volume in (Mpc/h)^3 for each redshift bin 
-	GRS.V_z[0] = fsky*7.638045716970048e+9;
-	GRS.V_z[1] = fsky*8.880053868308693e+9;
-	GRS.V_z[2] = fsky*10.01551720274328e+9;
-	GRS.V_z[3] = fsky*11.03469447987116e+9;
-	GRS.V_z[4] = fsky*11.93697687216718e+9;
-	GRS.V_z[5] = fsky*12.72632175854491e+9;
-	GRS.V_z[6] = fsky*13.40790417296822e+9;
-
-
+	GRS.V_z[0] = fsky*43.8761e+09;
+	GRS.V_z[1] = fsky*66.5458e+09;
+	GRS.V_z[2] = fsky*77.2438e+09;
+	GRS.V_z[3] = fsky*80.5314e+09;
+	GRS.V_z[4] = fsky*79.9022e+09;
+	GRS.V_z[5] = fsky*77.3427e+09;
+	GRS.V_z[6] = fsky*59.4267e+09;
+	
+	double n_mult=1.; 
 	// galaxy parameters
 	// galaxy density in (h/Mpc)^3
-	GRS_gal.n_g[0] = 0.018657500737836806; 
-	GRS_gal.n_g[1] = 0.014406050379553056; 
-	GRS_gal.n_g[2] = 0.005963593710731202; 
-	GRS_gal.n_g[3] = 0.002513355485336809; 
-	GRS_gal.n_g[4] = 0.000970455466577180; 
-	GRS_gal.n_g[5] = 0.000344104021812875; 
-	GRS_gal.n_g[6] = 0.000100619629480939; 
-	GRS_gal.b_g[0] = 1.538026692020565;
-	GRS_gal.b_g[1] = 1.862707210288686;
-	GRS_gal.b_g[2] = 2.213131761595241;
-	GRS_gal.b_g[3] = 2.617023657038295;
-	GRS_gal.b_g[4] = 2.975011712138650;
-	GRS_gal.b_g[5] = 3.376705680190931;
-	GRS_gal.b_g[6] = 3.725882076395691;
+	GRS_gal.n_g[0] = n_mult*0.003803; 
+	GRS_gal.n_g[1] = n_mult*0.002845; 
+	GRS_gal.n_g[2] = n_mult*0.001182; 
+	GRS_gal.n_g[3] = n_mult*0.000503; 
+	GRS_gal.n_g[4] = n_mult*0.000195; 
+	GRS_gal.n_g[5] = n_mult*0.000069; 
+	GRS_gal.n_g[6] = n_mult*0.000025; 
+	GRS_gal.b_g[0] = 1.5546;
+	GRS_gal.b_g[1] = 1.8696;
+	GRS_gal.b_g[2] = 2.2153;
+	GRS_gal.b_g[3] = 2.6173;
+	GRS_gal.b_g[4] = 2.9744;
+	GRS_gal.b_g[5] = 3.3755;
+	GRS_gal.b_g[6] = 3.7250;
 	for (int i = 0; i < GRS.N_z; i++){
 		GRS_gal.b_g_fid[i]=GRS_gal.b_g[i]; //fiducial input values=center for prior calculation
 		GRS_gal.sigma_p[i] = 290.0; // in km/s
@@ -322,7 +323,7 @@ int set_nuisance_GRS_gbias(double B1, double B2, double B3, double B4, double B5
 //  GRS_gal.b_g[8] = B9;
 //  GRS_gal.b_g[9] = B10;
   for (int i = 0; i < GRS.N_z; i++){
-    if (GRS_gal.b_g[i] < 1.2 || GRS_gal.b_g[i] > 4.0) return 0;
+    if (GRS_gal.b_g[i] < 0.8 || GRS_gal.b_g[i] > 4.2) return 0;
   }
   return 1;
 } 
@@ -508,12 +509,12 @@ double log_like_GRS(double OMM, double S8, double NS, double W0,double WA, doubl
   // add Gaussian prior on k_star
   log_L_prior -= 0.5*pow((KSTAR-0.24)/0.024,2.);
   
-  for (i = 0; i < GRS.N_z; i++){
-	 log_L_prior -= 0.5*pow((GRS_gal.b_g[i]-GRS_gal.b_g_fid[i])/0.1,2.);  
-  }
-  for (i = 0; i < GRS.N_z; i++){
-	 log_L_prior -= 0.5*pow((GRS_gal.sigma_p[i]-GRS_gal.sigma_p_fid[i])/GRS_gal.sigma_p_fid_sigma,2.);  
-  }
+  // for (i = 0; i < GRS.N_z; i++){
+	 // log_L_prior -= 0.5*pow((GRS_gal.b_g[i]-GRS_gal.b_g_fid[i])/0.1,2.);  
+  // }
+  // for (i = 0; i < GRS.N_z; i++){
+	 // log_L_prior -= 0.5*pow((GRS_gal.sigma_p[i]-GRS_gal.sigma_p_fid[i])/GRS_gal.sigma_p_fid_sigma,2.);  
+  // }
   set_data_GRS(GRS.k,GRS.mu,pred);
   
   chisqr=0.0;

@@ -7,7 +7,7 @@ from cosmolike_libs_grs import *
 from schwimmbad import MPIPool
 
 
-chain_file = "/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/GRS_Chris_nuisance" 
+chain_file = "/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/GRS_nuisance_kmax025" 
 
 
 init_GRS()

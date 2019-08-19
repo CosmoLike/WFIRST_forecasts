@@ -149,13 +149,13 @@ class InputCosmologyParams(IterableStruct):
     @classmethod
     def fiducial_sigma(cls):
         c = cls()
-        c.omega_m = 0.03
-        c.sigma_8 = 0.03
-        c.n_s = 0.02
-        c.w0 = 0.1
-        c.wa = 0.1
-        c.omega_b = 0.001
-        c.h0 = 0.05
+        c.omega_m = 0.1
+        c.sigma_8 = 0.1
+        c.n_s = 0.05
+        c.w0 = 0.2
+        c.wa = 0.2
+        c.omega_b = 0.003
+        c.h0 = 0.1
         c.MGSigma = 0.1
         c.MGmu = 0.2     
         return c
@@ -173,7 +173,7 @@ class InputNuisanceParamsGRS(IterableStruct):
     @classmethod
     def fiducial(cls):
         c = cls()
-        c.grsbias[:] = [1.538026692020565,1.862707210288686,2.213131761595241,2.617023657038295,2.975011712138650,3.376705680190931,3.725882076395691]
+        c.grsbias[:] = [1.55459,1.86960,2.21530,2.61733,2.97440,3.37554,3.72500]
         c.grssigmap[:] = np.repeat(290.,7)
         c.grssigmaz = 0.001
         c.grspshot = 0.0
@@ -183,8 +183,8 @@ class InputNuisanceParamsGRS(IterableStruct):
     @classmethod
     def fiducial_sigma(cls):
         c = cls()
-        c.grsbias[:] = np.repeat(0.15, 7)
-        c.grssigmap[:] = np.repeat(20.0, 7)
+        c.grsbias[:] = np.repeat(0.4, 7)
+        c.grssigmap[:] = np.repeat(50.0, 7)
         c.grssigmaz = 0.0002 # fid is 0.001 and can't be neg
         c.grspshot = 0.001 #fid is zero
         c.grskstar = 0.05 # fid is 0.24
@@ -221,7 +221,7 @@ class LikelihoodFunctionWrapper(object):
         #print
         like = lib.log_like_wrapper(icp, inp)
         #print "like before" , like
-        if like < -1.0e+10:
+        if like < -1.0e13:
             return -np.inf
         return like
 

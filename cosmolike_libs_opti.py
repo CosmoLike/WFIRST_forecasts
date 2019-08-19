@@ -378,7 +378,6 @@ def sample_cosmology_only(MG = False):
         varied_parameters.append('wa')
         varied_parameters.append('omega_b')
         varied_parameters.append('h0')
-
     return varied_parameters
 
 def sample_cosmology_shear_nuisance(tomo_N_shear,MG = False):

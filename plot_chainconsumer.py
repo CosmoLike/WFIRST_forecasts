@@ -68,9 +68,9 @@ def threechain_multi_plot(start,filename, out, chainnames, paranames,plotrange):
 	d2read = np.genfromtxt(filename[1])
 	d3read = np.genfromtxt(filename[2])
 	
-	d1=d1read[start:,(3,4)]-fid
-	d2=d2read[start:,(3,4)]-fid
-	d3=d3read[start:,(3,4)]-fid
+	d1=d1read[1000000:,(3,4)]-fid
+	d2=d2read[1000000:,(3,4)]-fid
+	d3=d3read[1000000:,(3,4)]-fid
 	
 	c = ChainConsumer()
 	c.add_chain(d1,parameters=paranames, name =chainnames[0])
@@ -98,19 +98,19 @@ def twochain_multi_plot(start,filename, out, chainnames, paranames,plotrange):
 	c.configure(colors=['b','g'], sigmas=[1],shade=True,shade_alpha=0.2,shade_gradient=0.0)
 	fig = c.plotter.plot(figsize=2.0,extents=plotrange,filename="plots/"+out,truth=[0.0,0.0])
 
-filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_shear_shear_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_clustering_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_clusterN_clusterWL_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_SN","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/GRS_Chris_nuisance","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_3x2pt_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_3x2pt_clusterN_clusterWL_sys_opti"]
+# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_shear_shear_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_clustering_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_clusterN_clusterWL_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_SN","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/GRS_Chris_nuisance","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_3x2pt_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_3x2pt_clusterN_clusterWL_sys_opti"]
 
-chainnames=[r"WL",r"LSS",r"Clusters",r"SN",r"GRS",r"3x2pt",r"3x2+clusters"]
-paranames=[r"$\Delta w_0$", r"$\Delta w_a$"]
-plotrange=[(-0.5,0.5),(-1.4,1.4)]
-sevenchain_multi_plot(500000,filename,"WFIRST_individual_vs_multi.pdf",chainnames,paranames,plotrange)
-
-# filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/like_WFIRST_shear_shear_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/like_WFIRST_clustering_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_clusterN_clusterWL_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_SN","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_3x2pt_sys_opti","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/like_WFIRST_3x2pt_clusterN_clusterWL_sys_opti"]
-
-# chainnames=[r"WL",r"LSS",r"Clusters",r"SN",r"3x2pt",r"3x2+clusters"]
+# chainnames=[r"WL",r"LSS",r"Clusters",r"SN",r"GRS",r"3x2pt",r"3x2+clusters"]
 # paranames=[r"$\Delta w_0$", r"$\Delta w_a$"]
 # plotrange=[(-0.5,0.5),(-1.4,1.4)]
-# sixchain_multi_plot(500000,filename,"WFIRST_individual_vs_multi.pdf",chainnames,paranames,plotrange)
+# sevenchain_multi_plot(500000,filename,"WFIRST_individual_vs_multi.pdf",chainnames,paranames,plotrange)
+
+filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/GRS_nuisance","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/GRS_nuisance","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/new/GRS_nuisance_long_wide"]
+
+chainnames=[r"WL",r"LSS",r"Clusters"]
+paranames=[r"$\Delta w_0$", r"$\Delta w_a$"]
+plotrange=[(-0.5,0.5),(-1.4,1.4)]
+threechain_multi_plot(500000,filename,"WFIRST_GRS.pdf",chainnames,paranames,plotrange)
 
 
 # filename=["/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/like_WFIRST_3x2pt_sys_pessi","/Users/timeifler/Dropbox/cosmolike_store/LSSTC_emu/like/like_LSST_3x2pt_sys_pessi","/Users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/chains/like_WFIRST_LSST_3x2pt_obssys"]
