@@ -20,3 +20,7 @@ external/
 plots/
 
 like_grs\.so\.dSYM/
+
+*.pyc
+
+*.so

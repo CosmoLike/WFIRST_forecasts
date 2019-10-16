@@ -32,7 +32,7 @@ void fill_GRS_default_parameters(){
 	// default value from Wang et al. 2013 (p.4)
 	GRS.k_star = 0.24; //in h/Mpc
 	GRS.k_min = 0.001; //in h/Mpc //Wang direct conversation
-	GRS.k_max = 0.25; //in h/Mpc
+	GRS.k_max = 0.3; //in h/Mpc
 }
 
 // void init_GRS_WFIRST_trade1(){
@@ -256,7 +256,7 @@ double fsky=2000.0/41253.0;
 	GRS.V_z[5] = fsky*77.3427e+09;
 	GRS.V_z[6] = fsky*59.4267e+09;
 	
-	double n_mult=1.; 
+	double n_mult=1.0; 
 	// galaxy parameters
 	// galaxy density in (h/Mpc)^3
 	GRS_gal.n_g[0] = n_mult*0.003803; 
@@ -323,7 +323,7 @@ int set_nuisance_GRS_gbias(double B1, double B2, double B3, double B4, double B5
 //  GRS_gal.b_g[8] = B9;
 //  GRS_gal.b_g[9] = B10;
   for (int i = 0; i < GRS.N_z; i++){
-    if (GRS_gal.b_g[i] < 0.8 || GRS_gal.b_g[i] > 4.2) return 0;
+    if (GRS_gal.b_g[i] < 0.6 || GRS_gal.b_g[i] > 4.2) return 0;
   }
   return 1;
 } 

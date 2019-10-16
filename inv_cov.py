@@ -7,10 +7,10 @@ from numpy import linalg as LA
 import numpy as np
 
 
-infile =['/users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/cov/cov_WFIRST_SNclustering10']
+infile =['cov/cov_WFIRST_only_final']
 
 #infile =['/users/timeifler/Dropbox/cosmolike_store/WFIRST_forecasts/cov/cov_WFIRST_Ncl25_4clusterbins_nrichmin25_source_Dec17']
-data= ['datav/WFIRST_all_2pt_clusterN_clusterWL_fid']
+data= ['datav/WFIRST_3x2pt_clusterN_clusterWL_opti']
 outname=['WFIRST_SN10']
 
 # the numbers below can be computed knowing the data vector settings, e.g. 10 tomographic source bins results in 55 shear-shear power spectra. Or they can be read off when running the covariance code, i.e. type 'compute_covariance_fourier 100000' and look for the output mentioning number of ggl bins accepted and/or number of cluster weka lensing bins accepted. The default numbers below most likely don't correspond to your binning choices.
@@ -152,7 +152,25 @@ for k in range(0,1):
 	  		f.write("%d %d %e\n" %( i,j, inv[i,j]))
 	f.close()
 
-	
+	# # ############### invert clusterN covariance #################
+	inv = LA.inv(cov[n2pt:n2pt+ncluster,n2pt:n2pt+ncluster])
+	a = np.sort(LA.eigvals(cov[n2pt:n2pt+ncluster,n2pt:n2pt+ncluster]))
+	print "min+max eigenvalues of clusterN_WL pre-conditioned matrix:"
+	print np.min(a), np.max(a)
+	if (np.min(a)<0):
+	  print "WARNING  WARNING: %s is not positive definite! WARNING!" % (infile[k])
+
+	for i in range(0,ncluster):
+	  inv[i,:]*= precond
+	  inv[:,i]*= precond
+
+	outfile = "cov/"+outname[k]+"_clusterN_inv"
+	f = open(outfile, "w")
+	for i in range(0,ncluster):
+	  	inv[i,i]=inv[i,i]*mask[n2pt+i]
+	  	for j in range(0,ncluster):
+	  		f.write("%d %d %e\n" %( i,j, inv[i,j]))
+	f.close()
 	
 
 	labels = (r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$',r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$',r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$',r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$',r'$C^{\kappa \kappa}\left(\ell,z_{\mathrm{s}_i},z_{\mathrm{s}_j}\right)$')

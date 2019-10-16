@@ -333,7 +333,7 @@ class LikelihoodFunctionWrapper(object):
         #print
         like = lib.log_like_wrapper(icp, inp)
         #print "like before" , like
-        if like < -1.0e+10:
+        if like < -1.0e+15:
             return -np.inf
         return like
 

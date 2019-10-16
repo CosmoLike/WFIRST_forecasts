@@ -11,7 +11,6 @@ void init_probes(char *probes);
 
 void set_galaxies_source();
 void set_galaxies_SN10();
-void set_galaxies_redmagic();
 void set_clusters_WFIRST(); //set parameters for LSST/WFIRST forecasts
 void init_lens_sample(char *lensphotoz, char *galsample);
 void init_source_sample(char *sourcephotoz);
@@ -467,7 +466,7 @@ void set_galaxies_SN10()
   }
   
   printf("\n");
-  printf("Source Sample - Tomographic Bin limits:\n");
+  printf("Lens Sample - Tomographic Bin limits:\n");
   for(k=0;k<tomo.clustering_Nbin-1;k++){
     frac=(k+1.)/(1.*tomo.clustering_Nbin)*sum[zbins-1];
     j = 0;
@@ -497,51 +496,6 @@ void set_galaxies_SN10()
   printf("%d GGL Powerspectra\n",tomo.ggl_Npowerspectra);
 }
 
-void set_galaxies_redmagic()
-{
-
-  int i,j,n;
-  redshift.clustering_zdistrpar_zmin = 0.2;
-  redshift.clustering_zdistrpar_zmax = 1.0;
-  //redshift.clustering_histogram_zbins=75;
-  
-  survey.n_lens = 0.25; //guestimate of stage 4 lens sample with excellent photo-z
-  printf("Number density of lens galaxies=%le\n",survey.n_lens);
-
-  tomo.clustering_Nbin        = 4;
-  tomo.clustering_Npowerspectra = 4;
-  tomo.clustering_zmax[0]      = .4;
-  tomo.clustering_zmax[1]      = .6;
-  tomo.clustering_zmax[2]      = .8;
-  tomo.clustering_zmax[3]      = 1.;
-  
-  tomo.clustering_zmin[0]      = 0.2;
-  tomo.clustering_zmin[1]      = 0.4;
-  tomo.clustering_zmin[2]      = 0.6;
-  tomo.clustering_zmin[3]      = 0.8;
-  printf("\n");
-  printf("Lens Sample: LSST redmagic- Tomographic Bin limits:\n");
-  for (i =0; i < tomo.clustering_Nbin ; i++){
-    printf("min=%le max=%le\n",tomo.clustering_zmin[i],tomo.clustering_zmax[i]);
-  }
-  printf("\n");
-  printf("Setting Galaxy Bias - Passive Evolution in z-bins:\n");
-  for (i =0; i < tomo.clustering_Nbin ; i++){
-    gbias.b[i] = 1.35+0.15*i;
-    printf("Bin %d: galaxy bias=%le\n",i,gbias.b[i]);
-  }
-  n = 0;
-  for (i = 0; i < tomo.clustering_Nbin; i++){
-    for(j = 0; j<tomo.shear_Nbin;j++){
-      n += test_zoverlap(i,j);
-      printf("GGL combinations zl=%d zs=%d accept=%d\n",i,j,test_zoverlap(i,j));
-    }
-  }
-  tomo.ggl_Npowerspectra = n;
-  printf("%d GGL Powerspectra\n",tomo.ggl_Npowerspectra);
-  printf("redshift.clustering_histogram_zbins=%d\n",redshift.clustering_histogram_zbins); 
-  
-}
 
 void set_galaxies_DES_Y1()
 {
@@ -833,17 +787,4 @@ void set_shear_priors_WFIRST_pessi()
   like.shearcalib=1;
 }
 
-
-void init_HOD_rm(){
-  set_HOD_redmagic_priors();
-  like.Rmin_bias = 0.1;//use halo+HOD model down to 100 kpc/h
-  redm.parameterization = 0; //Zehavi et al. 2011 HOD parameterization
-  redm.cg = 1.0;
-  redm.fc = 0.2;
-  redm.hod[0] = 12.1;
-  redm.hod[1] = 0.4;
-  redm.hod[2] = 13.65;
-  redm.hod[3] = 12.2;
-  redm.hod[4] = 1.0;
-}
 

@@ -183,7 +183,7 @@ class InputNuisanceParamsGRS(IterableStruct):
     @classmethod
     def fiducial_sigma(cls):
         c = cls()
-        c.grsbias[:] = np.repeat(0.4, 7)
+        c.grsbias[:] = np.repeat(0.2, 7)
         c.grssigmap[:] = np.repeat(50.0, 7)
         c.grssigmaz = 0.0002 # fid is 0.001 and can't be neg
         c.grspshot = 0.001 #fid is zero
